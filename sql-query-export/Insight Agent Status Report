@@ -1,0 +1,66 @@
+
+-- Insight Agent Status Report (Alternative)
+-- This report identifies assets with Insight Agents and shows their status information
+-- This version uses multiple methods to detect agent presence
+
+SELECT
+  -- Asset Information
+  da.ip_address AS "IP Address",
+  da.host_name AS "Hostname",
+  dos.description AS "Operating System",
+  
+  -- Check if asset has agent scan data
+  CASE
+    WHEN EXISTS (
+      -- Check scan type from the fact_asset_scan table if available
+      SELECT 1 FROM fact_asset_scan fas 
+      WHERE fas.asset_id = da.asset_id 
+      AND EXISTS (
+        SELECT 1 FROM dim_scan s 
+        WHERE s.scan_id = fas.scan_id 
+        AND s.type_id = 'G'  -- 'G' is the scan type for Agent scans
+      )
+    ) THEN 'Yes'
+    ELSE 'No'
+  END AS "Has Agent",
+  
+  -- Last scan time (as proxy for agent check-in)
+  da.last_assessed_for_vulnerabilities AS "Last Assessment",
+  
+  -- Calculate staleness based on last assessment
+  CASE
+    WHEN da.last_assessed_for_vulnerabilities IS NULL THEN 'Unknown'
+    WHEN (CURRENT_DATE - CAST(da.last_assessed_for_vulnerabilities AS DATE)) > 7 THEN 'Stale'
+    ELSE 'Active'
+  END AS "Status",
+  
+  -- Days since last assessment
+  (CURRENT_DATE - CAST(da.last_assessed_for_vulnerabilities AS DATE)) AS "Days Since Last Assessment",
+  
+  -- Additional information that might help identify agent-related data
+  -- List all scan engines used to scan this asset
+  (SELECT string_agg(DISTINCT se.name, ', ')
+   FROM fact_asset_scan fas
+   JOIN dim_scan s ON fas.scan_id = s.scan_id
+   JOIN dim_scan_engine se ON s.scan_engine_id = se.scan_engine_id
+   WHERE fas.asset_id = da.asset_id) AS "Scan Engines Used",
+   
+  -- Owner for additional context
+  COALESCE((SELECT tag_name FROM dim_tag_asset ta JOIN dim_tag t ON ta.tag_id = t.tag_id 
+            WHERE ta.asset_id = da.asset_id AND t.tag_type = 'OWNER' LIMIT 1), 'Unassigned') AS "Owner"
+  
+FROM dim_asset da
+LEFT JOIN dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
+
+-- No additional WHERE filters so we can see all assets and their potential agent status
+
+ORDER BY
+  -- Order by status and days since last assessment
+  CASE
+    WHEN da.last_assessed_for_vulnerabilities IS NULL THEN 1
+    WHEN (CURRENT_DATE - CAST(da.last_assessed_for_vulnerabilities AS DATE)) > 30 THEN 2
+    WHEN (CURRENT_DATE - CAST(da.last_assessed_for_vulnerabilities AS DATE)) > 7 THEN 3
+    ELSE 4
+  END,
+  (CURRENT_DATE - CAST(da.last_assessed_for_vulnerabilities AS DATE)) DESC,
+  da.ip_address;
