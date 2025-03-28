@@ -1,0 +1,87 @@
+-- Software Inventory and EOL Report (Fixed - 3rd Version)
+-- This report provides a comprehensive view of installed software across your environment
+-- It helps identify outdated, unsupported, or potentially vulnerable software
+
+SELECT
+  -- Asset Information
+  da.ip_address AS "IP Address",
+  da.host_name AS "Hostname",
+  dos.description AS "Operating System",
+  
+  -- Software Information
+  dsw.vendor AS "Vendor",
+  dsw.family AS "Product Family",
+  dsw.name AS "Software Name",
+  dsw.version AS "Version",
+  dsw.software_class AS "Software Class",
+  
+  -- Custom Software Risk Classification
+  CASE
+    -- End of Life/Support Software Examples
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows' AND dsw.version LIKE '7%') THEN 'End of Support'
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows' AND dsw.version LIKE 'XP%') THEN 'End of Support'
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows Server' AND dsw.version LIKE '2008%') THEN 'End of Support'
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows Server' AND dsw.version LIKE '2003%') THEN 'End of Support'
+    WHEN (dsw.vendor = 'Oracle' AND dsw.name = 'Java' AND dsw.version < '11') THEN 'Outdated'
+    WHEN (dsw.vendor = 'Adobe' AND dsw.name = 'Flash Player') THEN 'End of Support'
+    
+    -- Common Vulnerable Software Examples
+    WHEN (dsw.vendor IN ('Oracle', 'OpenJDK') AND dsw.name LIKE '%Java%' AND dsw.version < '8') THEN 'High Risk'
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Internet Explorer') THEN 'High Risk'
+    WHEN (dsw.vendor = 'Adobe' AND dsw.name = 'Reader' AND dsw.version < '20') THEN 'Medium Risk'
+    
+    -- Other
+    ELSE 'Normal'
+  END AS "Risk Status",
+  
+  -- Software Vulnerability Information
+  (SELECT COUNT(*) FROM fact_asset_vulnerability_finding favf 
+   JOIN dim_vulnerability dv ON favf.vulnerability_id = dv.vulnerability_id
+   WHERE favf.asset_id = da.asset_id 
+   AND (
+     -- Associate vulnerabilities with software (this is simplified, would need customization)
+     dv.title ILIKE '%' || dsw.vendor || '%' || dsw.name || '%' || dsw.version || '%' OR
+     dv.title ILIKE '%' || dsw.name || '%' || dsw.version || '%'
+   )
+  ) AS "Related Vulnerabilities",
+  
+  -- Owner Information
+  COALESCE((SELECT tag_name FROM dim_tag_asset ta JOIN dim_tag t ON ta.tag_id = t.tag_id 
+            WHERE ta.asset_id = da.asset_id AND t.tag_type = 'OWNER' LIMIT 1), 'Unassigned') AS "Owner",
+            
+  -- Additional Context
+  CASE 
+    WHEN dht.description = 'Virtual Machine' THEN 'VM'
+    WHEN dht.description = 'Hypervisor' THEN 'Hypervisor'
+    WHEN dht.description = 'Bare Metal' THEN 'Physical'
+    ELSE dht.description
+  END AS "Host Type",
+  
+  da.last_assessed_for_vulnerabilities AS "Last Scan Date"
+  
+FROM dim_asset_software das
+JOIN dim_asset da ON das.asset_id = da.asset_id
+JOIN dim_software dsw ON das.software_id = dsw.software_id
+LEFT JOIN dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
+LEFT JOIN dim_host_type dht ON da.host_type_id = dht.host_type_id
+-- Removed problematic fingerprint source join that was causing the error
+
+WHERE 1=1
+
+ORDER BY
+  -- Order by risk status, then vendor and product
+  CASE
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows' AND dsw.version LIKE '7%') THEN 1
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows' AND dsw.version LIKE 'XP%') THEN 1
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows Server' AND dsw.version LIKE '2008%') THEN 1
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Windows Server' AND dsw.version LIKE '2003%') THEN 1
+    WHEN (dsw.vendor = 'Adobe' AND dsw.name = 'Flash Player') THEN 1
+    WHEN (dsw.vendor IN ('Oracle', 'OpenJDK') AND dsw.name LIKE '%Java%' AND dsw.version < '8') THEN 2
+    WHEN (dsw.vendor = 'Microsoft' AND dsw.name = 'Internet Explorer') THEN 2
+    WHEN (dsw.vendor = 'Adobe' AND dsw.name = 'Reader' AND dsw.version < '20') THEN 3
+    ELSE 4
+  END,
+  dsw.vendor,
+  dsw.name,
+  dsw.version,
+  da.ip_address;
