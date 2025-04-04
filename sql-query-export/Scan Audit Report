@@ -1,0 +1,79 @@
+WITH recent_scans AS (
+    -- Get all scans in the past month
+    SELECT 
+        site.site_id,
+        site.name AS site_name,
+        s.scan_id,
+        s.scan_name,
+        s.started,
+        s.finished,
+        s.status_id,
+        CASE 
+            WHEN s.status_id = 'C' THEN 'Successful'
+            WHEN s.status_id = 'A' THEN 'Aborted'
+            WHEN s.status_id = 'S' THEN 'Stopped'
+            WHEN s.status_id = 'E' THEN 'Failed'
+            WHEN s.status_id = 'P' THEN 'Paused'
+            WHEN s.status_id = 'U' THEN 'Running'
+            ELSE 'Unknown'
+        END AS status,
+        ROW_NUMBER() OVER (PARTITION BY site.site_id ORDER BY s.started DESC) AS scan_rank
+    FROM dim_site site
+    LEFT JOIN dim_site_scan ss ON site.site_id = ss.site_id
+    LEFT JOIN dim_scan s ON ss.scan_id = s.scan_id
+    WHERE s.started >= (CURRENT_DATE - INTERVAL '30 days')
+),
+last_successful_scan AS (
+    -- Find the last successful scan for each site (even if outside the 30-day window)
+    SELECT 
+        site.site_id,
+        MAX(CASE WHEN s.status_id = 'C' THEN s.finished END) AS last_successful_scan_date
+    FROM dim_site site
+    LEFT JOIN dim_site_scan ss ON site.site_id = ss.site_id
+    LEFT JOIN dim_scan s ON ss.scan_id = s.scan_id
+    GROUP BY site.site_id
+)
+SELECT 
+    -- Sites with scans in the last month
+    rs.site_id,
+    rs.site_name,
+    rs.scan_id AS most_recent_scan_id,
+    rs.scan_name AS most_recent_scan_name,
+    to_char(rs.started, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_started,
+    to_char(rs.finished, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_finished,
+    rs.status AS most_recent_scan_status,
+    CASE 
+        WHEN rs.status = 'Successful' THEN NULL
+        ELSE to_char(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS')
+    END AS last_successful_scan_date,
+    CASE 
+        WHEN rs.status = 'Successful' THEN NULL
+        WHEN lss.last_successful_scan_date IS NULL THEN 'Never successfully scanned'
+        ELSE EXTRACT(DAY FROM (CURRENT_DATE - lss.last_successful_scan_date)) || ' days ago'
+    END AS days_since_successful_scan
+FROM recent_scans rs
+LEFT JOIN last_successful_scan lss ON rs.site_id = lss.site_id
+WHERE rs.scan_rank = 1  -- Only the most recent scan for each site
+
+UNION ALL
+
+-- Sites with no scans in the last month
+SELECT 
+    site.site_id,
+    site.name AS site_name,
+    NULL AS most_recent_scan_id,
+    'No scans in past 30 days' AS most_recent_scan_name,
+    NULL AS most_recent_scan_started,
+    NULL AS most_recent_scan_finished,
+    'No recent scans' AS most_recent_scan_status,
+    to_char(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS') AS last_successful_scan_date,
+    CASE 
+        WHEN lss.last_successful_scan_date IS NULL THEN 'Never successfully scanned'
+        ELSE EXTRACT(DAY FROM (CURRENT_DATE - lss.last_successful_scan_date)) || ' days ago'
+    END AS days_since_successful_scan
+FROM dim_site site
+LEFT JOIN recent_scans rs ON site.site_id = rs.site_id
+LEFT JOIN last_successful_scan lss ON site.site_id = lss.site_id
+WHERE rs.site_id IS NULL  -- No scans in the last month
+
+ORDER BY site_name;
