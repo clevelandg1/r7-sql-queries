@@ -1,0 +1,81 @@
+-- Agent Status Report
+-- This report shows the status of all agents and when they last checked in
+-- It distinguishes between scan engine assessments and agent-based assessments
+-- "Stale" status is defined as an agent that hasn't checked in for 7+ days
+-- Created: April 2025
+
+WITH last_agent_scan AS (
+    -- Get the most recent agent scan time for each asset
+    SELECT 
+        a.asset_id,
+        MAX(s.finished) AS last_agent_scan_time
+    FROM 
+        dim_asset a
+    JOIN 
+        dim_asset_scan das ON a.asset_id = das.asset_id
+    JOIN 
+        dim_scan s ON das.scan_id = s.scan_id
+    WHERE 
+        s.type_id = 'G' -- 'G' is for Agent scans in dim_scan.type_id
+    GROUP BY 
+        a.asset_id
+),
+last_engine_scan AS (
+    -- Get the most recent non-agent (engine) scan time for each asset
+    SELECT 
+        a.asset_id,
+        MAX(s.finished) AS last_engine_scan_time
+    FROM 
+        dim_asset a
+    JOIN 
+        dim_asset_scan das ON a.asset_id = das.asset_id
+    JOIN 
+        dim_scan s ON das.scan_id = s.scan_id
+    WHERE 
+        s.type_id != 'G' -- All non-agent scans (manual, scheduled, etc.)
+    GROUP BY 
+        a.asset_id
+)
+SELECT 
+    -- Basic asset information
+    a.asset_id,
+    a.ip_address,
+    a.host_name,
+    
+    -- Format timestamps to be human-readable
+    TO_CHAR(las.last_agent_scan_time, 'YYYY-MM-DD HH24:MI:SS') AS last_agent_scan_time,
+    TO_CHAR(les.last_engine_scan_time, 'YYYY-MM-DD HH24:MI:SS') AS last_engine_scan_time,
+    
+    -- Determine agent status based on last check-in time
+    CASE 
+        WHEN las.last_agent_scan_time IS NULL THEN 'No Agent'
+        WHEN (CURRENT_TIMESTAMP - las.last_agent_scan_time) > INTERVAL '7 days' THEN 'Stale'
+        ELSE 'Active'
+    END AS agent_status,
+    
+    -- Calculate time elapsed since the last agent check-in
+    CASE 
+        WHEN las.last_agent_scan_time IS NOT NULL THEN 
+            EXTRACT(DAY FROM (CURRENT_TIMESTAMP - las.last_agent_scan_time)) || ' days ' ||
+            EXTRACT(HOUR FROM (CURRENT_TIMESTAMP - las.last_agent_scan_time)) || ' hours'
+        ELSE 'N/A'
+    END AS time_since_last_check_in
+FROM 
+    dim_asset a
+LEFT JOIN 
+    last_agent_scan las ON a.asset_id = las.asset_id
+LEFT JOIN 
+    last_engine_scan les ON a.asset_id = les.asset_id
+    
+-- Sort results to prioritize stale agents and then by last check-in time
+ORDER BY 
+    CASE 
+        WHEN las.last_agent_scan_time IS NULL THEN 2 -- Assets without agents shown last
+        WHEN (CURRENT_TIMESTAMP - las.last_agent_scan_time) > INTERVAL '7 days' THEN 1 -- Stale agents shown next
+        ELSE 0 -- Active agents shown first
+    END,
+    las.last_agent_scan_time;
+
+-- Note: The report uses scan type 'G' to identify agent scans vs. other scan types
+-- Modify the stale threshold (7 days) as needed to match your organization's requirements
+-- This report depends on scan data being properly categorized by type_id in the dim_scan table
