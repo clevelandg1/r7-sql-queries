@@ -1,0 +1,10 @@
+SELECT 
+    host_name,
+    ARRAY_AGG(asset_id) AS asset_ids,
+    COUNT(asset_id) AS number_of_assets
+FROM 
+    dim_asset
+GROUP BY 
+    host_name
+HAVING 
+    COUNT(asset_id) > 1;
