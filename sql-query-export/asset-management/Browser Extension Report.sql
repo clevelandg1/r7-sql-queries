@@ -1,73 +1,74 @@
 -- Universal Browser Extensions Report Template
 -- This query uses comprehensive patterns to identify browser extensions in any environment
-SELECT 
+
+SELECT
     da.sites AS "Site_Name",
     da.ip_address AS "IP_Address",
-    da.mac_address AS "MAC_Address", 
+    da.mac_address AS "MAC_Address",
     da.host_name AS "DNS_Hostname",
     ds.vendor AS "Vendor",
     ds.name AS "Software_Name",
-    ds.family AS "Software_Family", 
+    ds.family AS "Software_Family",
     ds.version AS "Software_Version",
-    
+
     -- Agent check-in information (properly formatted timestamp)
     TO_CHAR(agent_checkin.last_agent_checkin, 'YYYY-MM-DD HH24:MI:SS') AS "Last_Agent_Checkin",
-    
+
     -- Engine scan information (properly formatted timestamp)
     TO_CHAR(engine_scan.last_engine_scan, 'YYYY-MM-DD HH24:MI:SS') AS "Last_Engine_Scan",
-    
-    -- Overall last scan information (properly formatted timestamp)
+
+    -- Overall last scan information (properly formatted timestamps)
     TO_CHAR(fa.scan_finished, 'YYYY-MM-DD HH24:MI:SS') AS "Last_Scan_Finished",
     TO_CHAR(fa.scan_started, 'YYYY-MM-DD HH24:MI:SS') AS "Last_Scan_Started",
-    
+
     -- Scan type identification
     scan_type.description AS "Last_Scan_Type",
-    
+
     -- Additional useful fields
     ds.cpe AS "Software_CPE",
     fa.last_scan_id AS "Last_Scan_ID"
 
-FROM 
+FROM
     dim_asset_software das
     JOIN dim_software ds USING(software_id)
     JOIN dim_asset da ON da.asset_id = das.asset_id
     JOIN fact_asset fa ON fa.asset_id = das.asset_id
-    
+
     -- Get scan type for the last scan
     LEFT JOIN dim_scan last_scan ON last_scan.scan_id = fa.last_scan_id
     LEFT JOIN dim_scan_type scan_type ON scan_type.type_id = last_scan.type_id
-    
+
     -- Left join to get agent check-in data
     LEFT JOIN (
-        SELECT 
+        SELECT
             asset_id,
             MAX(scan_finished) AS last_agent_checkin
-        FROM 
+        FROM
             fact_asset_scan fas
             JOIN dim_scan ds_scan USING(scan_id)
-        WHERE 
+        WHERE
             ds_scan.type_id = 'G'  -- 'G' indicates Agent scan type
             AND fas.scan_finished IS NOT NULL
-        GROUP BY 
+        GROUP BY
             asset_id
     ) agent_checkin ON agent_checkin.asset_id = da.asset_id
-    
+
     -- Left join to get engine scan data
     LEFT JOIN (
-        SELECT 
+        SELECT
             asset_id,
             MAX(scan_finished) AS last_engine_scan
-        FROM 
+        FROM
             fact_asset_scan fas
             JOIN dim_scan ds_scan USING(scan_id)
-        WHERE 
+        WHERE
             ds_scan.type_id IN ('A', 'S')  -- 'A' = Manual, 'S' = Scheduled engine scans
             AND fas.scan_finished IS NOT NULL
-        GROUP BY 
+        GROUP BY
             asset_id
     ) engine_scan ON engine_scan.asset_id = da.asset_id
 
-WHERE 
+WHERE
     -- Universal browser extension detection patterns
     (
         -- PRIMARY PATTERNS: Direct extension terminology
@@ -78,19 +79,19 @@ WHERE
         ds.family ILIKE '%extension%' OR
         ds.family ILIKE '%add-on%' OR
         ds.family ILIKE '%addon%' OR
-        
+
         -- BROWSER-SPECIFIC PATTERNS: Browser + extension combinations
         (ds.name ILIKE '%chrome%' AND ds.name ILIKE '%extension%') OR
         (ds.name ILIKE '%firefox%' AND (ds.name ILIKE '%addon%' OR ds.name ILIKE '%add-on%')) OR
         (ds.name ILIKE '%edge%' AND ds.name ILIKE '%extension%') OR
         (ds.name ILIKE '%safari%' AND ds.name ILIKE '%extension%') OR
         (ds.name ILIKE '%browser%' AND (ds.name ILIKE '%extension%' OR ds.name ILIKE '%plugin%')) OR
-        
+
         -- VENDOR + BROWSER PATTERNS: Known browser vendors with extension terms
         (ds.vendor ILIKE '%google%' AND ds.name ILIKE '%extension%') OR
         (ds.vendor ILIKE '%mozilla%' AND (ds.name ILIKE '%addon%' OR ds.name ILIKE '%add-on%')) OR
         (ds.vendor ILIKE '%microsoft%' AND ds.name ILIKE '%extension%') OR
-        
+
         -- COMMON EXTENSION NAMES: Well-known browser extensions
         ds.name ILIKE '%lastpass%' OR
         ds.name ILIKE '%1password%' OR
@@ -129,14 +130,14 @@ WHERE
         ds.name ILIKE '%skype%' OR
         ds.name ILIKE '%slack%' OR
         ds.name ILIKE '%discord%' OR
-        
+
         -- FAMILY-BASED PATTERNS: Extensions identified by family
         ds.family ILIKE '%lastpass%' OR
         ds.family ILIKE '%chrome extension%' OR
         ds.family ILIKE '%firefox addon%' OR
         ds.family ILIKE '%browser plugin%'
     )
-    
+
     -- EXCLUSIONS: Filter out non-browser software that might match patterns
     AND ds.vendor NOT ILIKE '%dell%'
     AND ds.vendor NOT ILIKE '%hp%'
@@ -165,7 +166,7 @@ WHERE
     AND NOT (ds.vendor ILIKE '%linux%' AND ds.name ILIKE '%gnome-shell%' AND ds.name NOT ILIKE '%browser%')
     AND NOT (ds.vendor ILIKE '%ubuntu%' AND ds.name ILIKE '%nautilus%')
 
-ORDER BY 
+ORDER BY
     da.sites ASC,
     da.ip_address ASC,
     ds.name ASC;

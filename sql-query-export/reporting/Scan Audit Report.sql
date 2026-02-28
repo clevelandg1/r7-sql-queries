@@ -1,6 +1,10 @@
+-- Scan Audit Report
+-- Shows the most recent scan status for every site over the last 30 days
+-- Also surfaces sites with no recent scans and the last time they were successfully scanned
+
 WITH recent_scans AS (
     -- Get all scans in the past month
-    SELECT 
+    SELECT
         site.site_id,
         site.name AS site_name,
         s.scan_id,
@@ -8,7 +12,7 @@ WITH recent_scans AS (
         s.started,
         s.finished,
         s.status_id,
-        CASE 
+        CASE
             WHEN s.status_id = 'C' THEN 'Successful'
             WHEN s.status_id = 'A' THEN 'Aborted'
             WHEN s.status_id = 'S' THEN 'Stopped'
@@ -25,7 +29,7 @@ WITH recent_scans AS (
 ),
 last_successful_scan AS (
     -- Find the last successful scan for each site (even if outside the 30-day window)
-    SELECT 
+    SELECT
         site.site_id,
         MAX(CASE WHEN s.status_id = 'C' THEN s.finished END) AS last_successful_scan_date
     FROM dim_site site
@@ -33,20 +37,20 @@ last_successful_scan AS (
     LEFT JOIN dim_scan s ON ss.scan_id = s.scan_id
     GROUP BY site.site_id
 )
-SELECT 
+SELECT
     -- Sites with scans in the last month
     rs.site_id,
     rs.site_name,
     rs.scan_id AS most_recent_scan_id,
     rs.scan_name AS most_recent_scan_name,
-    to_char(rs.started, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_started,
-    to_char(rs.finished, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_finished,
+    TO_CHAR(rs.started, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_started,
+    TO_CHAR(rs.finished, 'YYYY-MM-DD HH24:MI:SS') AS most_recent_scan_finished,
     rs.status AS most_recent_scan_status,
-    CASE 
+    CASE
         WHEN rs.status = 'Successful' THEN NULL
-        ELSE to_char(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS')
+        ELSE TO_CHAR(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS')
     END AS last_successful_scan_date,
-    CASE 
+    CASE
         WHEN rs.status = 'Successful' THEN NULL
         WHEN lss.last_successful_scan_date IS NULL THEN 'Never successfully scanned'
         ELSE EXTRACT(DAY FROM (CURRENT_DATE - lss.last_successful_scan_date)) || ' days ago'
@@ -58,7 +62,7 @@ WHERE rs.scan_rank = 1  -- Only the most recent scan for each site
 UNION ALL
 
 -- Sites with no scans in the last month
-SELECT 
+SELECT
     site.site_id,
     site.name AS site_name,
     NULL AS most_recent_scan_id,
@@ -66,8 +70,8 @@ SELECT
     NULL AS most_recent_scan_started,
     NULL AS most_recent_scan_finished,
     'No recent scans' AS most_recent_scan_status,
-    to_char(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS') AS last_successful_scan_date,
-    CASE 
+    TO_CHAR(lss.last_successful_scan_date, 'YYYY-MM-DD HH24:MI:SS') AS last_successful_scan_date,
+    CASE
         WHEN lss.last_successful_scan_date IS NULL THEN 'Never successfully scanned'
         ELSE EXTRACT(DAY FROM (CURRENT_DATE - lss.last_successful_scan_date)) || ' days ago'
     END AS days_since_successful_scan

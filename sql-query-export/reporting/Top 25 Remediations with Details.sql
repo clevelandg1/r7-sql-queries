@@ -1,34 +1,35 @@
--- InsightVM Top 25 Remediations Report - Corrected Column Names
--- Using column names without 's' at the end based on error pattern
+-- InsightVM Top 25 Remediations Report
+-- Lists the top 25 remediation actions ranked by number of impacted assets
+-- and risk score reduction, including exploit and malware exposure metrics
 
-SELECT 
+SELECT
     ROW_NUMBER() OVER (ORDER BY fr.assets DESC, fr.riskscore DESC) AS rank,
     fr.solution_id,
     ds.nexpose_id AS solution_nexpose_id,
     ds.summary AS solution_title,
     ds.solution_type,
     ds.url AS solution_url,
-    
+
     -- Core metrics
     fr.assets AS number_of_assets_impacted,
     fr.vulnerabilities AS number_of_vulnerabilities_remediated,
     fr.vulnerability_instances AS total_vulnerability_instances,
-    
-    -- Exploit and malware metrics (using singular form)
+
+    -- Exploit and malware metrics
     fr.exploits AS number_of_exploits,
     fr.malware_kits AS number_of_malware_kits,
     fr.vulnerabilities_with_malware_kit AS malware_kit_vulnerabilities,
-    fr.vulnerabilities_with_exploit AS exploitable_vulnerabilities,  -- Changed to singular
-    
+    fr.vulnerabilities_with_exploit AS exploitable_vulnerabilities,
+
     -- Severity breakdown
     fr.critical_vulnerabilities,
     fr.severe_vulnerabilities,
     fr.moderate_vulnerabilities,
-    
+
     -- Risk score
     ROUND(fr.riskscore::numeric, 2) AS total_risk_score_reduction,
-    
-    -- Calculate percentages (using singular form)
+
+    -- Calculate percentages
     ROUND((fr.vulnerabilities_with_exploit::numeric / NULLIF(fr.vulnerabilities, 0) * 100), 2) AS exploit_percentage,
     ROUND((fr.vulnerabilities_with_malware_kit::numeric / NULLIF(fr.vulnerabilities, 0) * 100), 2) AS malware_percentage
 
