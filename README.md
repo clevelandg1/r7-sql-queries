@@ -62,3 +62,4 @@ sql-query-export/
 | [Historical Vulnerability Trend by Tag.sql](sql-query-export/vulnerability-tracking/Historical%20Vulnerability%20Trend%20by%20Tag.sql) | Per-asset monthly snapshots over an explicit date range, scoped to a single tag |
 | [Asset Vulnerability CVE Listing.sql](sql-query-export/vulnerability-tracking/Asset%20Vulnerability%20CVE%20Listing.sql) | Flat one-row-per-asset-per-CVE listing for export and downstream pivoting |
 | [Weak Cipher Vulnerability Count by Asset.sql](sql-query-export/vulnerability-tracking/Weak%20Cipher%20Vulnerability%20Count%20by%20Asset.sql) | Counts distinct weak/insecure cipher vulnerabilities per asset |
+| [Vulnerability SLA Compliance by Severity.sql](sql-query-export/vulnerability-tracking/Vulnerability%20SLA%20Compliance%20by%20Severity.sql) | Open vulnerabilities inside vs. outside severity-based remediation SLA windows, with a compliance % per severity |
