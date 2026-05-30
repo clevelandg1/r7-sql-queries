@@ -48,6 +48,7 @@ sql-query-export/
 | [Monthly Vulnerability Summary by Business Unit.sql](sql-query-export/reporting/Monthly%20Vulnerability%20Summary%20by%20Business%20Unit.sql) | QBR roll-up by business-unit tag prefix, one row per unit per calendar month |
 | [Risk Summary by Firm.sql](sql-query-export/reporting/Risk%20Summary%20by%20Firm.sql) | One row per member firm with total assets, risk score and severity counts, derived from site/group name prefixes |
 | [Risk Detail by Firm and Asset.sql](sql-query-export/reporting/Risk%20Detail%20by%20Firm%20and%20Asset.sql) | Asset-level drill-down behind the per-firm summary, one row per asset |
+| [Mean Time To Remediate by Severity.sql](sql-query-export/reporting/Mean%20Time%20To%20Remediate%20by%20Severity.sql) | Average and median days from first discovery to inferred remediation, per severity, with min/max |
 
 ### vulnerability-tracking
 
