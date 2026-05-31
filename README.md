@@ -2,10 +2,6 @@
 
 This repository contains SQL queries for InsightVM reports and data analysis, organized by category.
 
-## Schema reference
-
-All queries target the InsightVM (Nexpose) PostgreSQL Reporting Data Model. Before writing or reviewing a query, consult [`docs/SCHEMA.md`](docs/SCHEMA.md) (quick reference + confirmed gotchas) and the full model in [`docs/InsightVM-Reporting-Data-Model.txt`](docs/InsightVM-Reporting-Data-Model.txt). Verify every table and column against those files.
-
 ## Folder Structure
 
 ```
@@ -15,9 +11,6 @@ sql-query-export/
 ├── authentication/
 ├── reporting/
 └── vulnerability-tracking/
-docs/
-├── InsightVM-Reporting-Data-Model.txt   (full Rapid7 data model reference)
-└── SCHEMA.md                            (query-author quick reference + gotchas)
 ```
 
 ## Query Index
