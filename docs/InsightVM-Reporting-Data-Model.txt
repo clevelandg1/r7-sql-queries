@@ -1,0 +1,5885 @@
+Common measures
+It will be helpful to keep in mind some characteristics of certain measures that appear in the following tables.
+asset_compliance
+asset_compliance
+This attribute measures the ratio of assets that are compliant with the policy rule to the total number of assets that were tested for the policy rule.
+assets
+assets
+This attribute measures the number of assets within a particular level of aggregation.
+compliant_assets
+compliant_assets
+This attribute measures the number of assets that are compliant with the policy rule (taking into account policy rule overrides).
+exploits
+exploits
+This attribute measures the number of distinct exploit modules that can be used exploit vulnerabilities on each asset. When the level of grain aggregates multiple assets, the total is the summation of the exploits value for each asset. If there are no vulnerabilities found on the asset or there are no vulnerabilities that can be exploited with a exploit module, the count will be zero.
+malware_kits
+malware_kits
+This attribute measures the number of distinct malware kits that can be used exploit vulnerabilities on each asset. When the level of grain aggregates multiple assets, the total is the summation of the malware kits value for each asset. If there are no vulnerabilities found on the asset or there are no vulnerabilities that can be exploited with a malware kit, the count will be zero.
+noncompliant_assets
+noncompliant_assets
+This attribute measures the number of assets that are not compliant with the policy rule (taking into account policy rule overrides).
+not_applicable_assets
+riskscore
+rule_compliance
+vulnerabilities
+
+
+
+
+
+
+vulnerabilities_with_exploit
+vulnerabilities_with_malware_kit
+vulnerability_instances
+Fact_all
+fact_all
+fact_all
+Level of Grain: The summary of the current state of all assets within the scope of the report.
+Fact Type: accumulating snapshot
+Description: Summaries of the latest vulnerability details across the entire report. This is an accumulating snapshot fact that updates after every scan of any asset within the report completes. This fact will include the data for the most recent scan of each asset that is contained within the scope of the report. As the level of aggregation is all assets in the report, this fact table is guaranteed to return one and only one row always.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerabilities
+bigint
+No
+The number of vulnerabilities across all assets.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities across all assets.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities across all assets.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities across all assets.
+
+
+malware_kits
+integer
+No
+The number of malware kits across all assets.
+
+
+exploits
+integer
+No
+The number of exploit modules across all assets.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a malware kit across all assets.
+
+
+vulnerabilities_with_exploit
+integer
+No
+The number of vulnerabilities with an exploit module across all assets.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances across all assets.
+
+
+riskscore
+double precision
+No
+The risk score across all assets.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+fact_asset
+fact_asset
+Level of Grain: An asset and its current summary information.
+Fact Type: accumulating snapshot
+Description: The fact_asset fact table provides the most recent information for each asset within the scope of the report. For every asset in scope there will be one record in the fact table.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+last_scan_id
+bigint
+No
+The identifier of the scan with the most recent information being summarized.
+dim_scan
+scan_started
+timestamp with time zone
+No
+The date and time at which the latest scan for the asset started.
+
+
+scan_finished
+timestamp with time zone
+No
+The date and time at which the latest scan for the asset completed.
+
+
+vulnerabilities
+bigint
+No
+The number of all distinct vulnerabilities on the asset
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities on the asset.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities on the asset.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities on the asset.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with any vulnerabilities discovered on the asset.
+
+
+exploits
+integer
+No
+The number of exploits associated with any vulnerabilities discovered on the asset.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered on the asset.
+
+
+vulnerabilities_with_exploit
+integer
+No
+The number of vulnerabilities with a known exploit discovered on the asset.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances discovered on the asset
+
+
+riskscore
+double precision
+No
+The risk score of the asset.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+aggregated_credential_status_id
+integer
+No
+The status aggregated across all available services for the given asset in the given scan.
+dim_aggregated_credential_status
+
+Dimensional model
+
+fact_asset_date (startDate, endDate, dateInterval)
+fact_asset_date (startDate, endDate, dateInterval)
+Added in version 1.1.0
+Level of Grain: An asset and its summary information on a specific date.
+Fact Type: periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized values on an asset by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, a summarized value for each asset in the scope of the report will be returned for every dateInterval period of time. This will allow trending on asset information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If an asset did not exist prior to a summarization date, it will have no record for that date value. The summarized values of an asset represent the state of the asset in the most recent scan prior to the date being summarized; therefore, if an asset has not been scanned before the next summary interval, the values for the asset will remain the same.
+For example, fact_asset_date(‘2013-01-01’, ‘2014-01-01’, INTERVAL ‘1 month’) will return a row for each asset for every month in the year 2013.
+Arguments
+Column
+Data Type
+Description
+startDate
+date
+The first date to return summarizations for.
+endDate
+date
+The last date to return summarizations for.
+dateInterval
+interval
+The interval between the start and end date to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+last_scan_id
+bigint
+No
+The identifier of the scan with the most recent information being summarized.
+dim_scan
+scan_started
+timestamp with time zone
+No
+The date and time at which the latest scan for the asset started.
+
+
+scan_finished
+timestamp with time zone
+No
+The date and time at which the latest scan for the asset completed.
+
+
+vulnerabilities
+bigint
+No
+The number of all distinct vulnerabilities on the asset.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities on the asset.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities on the asset.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities on the asset.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with any vulnerabilities discovered on the asset.
+
+
+exploits
+integer
+No
+The number of exploits associated with any vulnerabilities discovered on the asset.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered on the asset.
+
+
+vulnerabilities_with_exploit
+integer
+No
+The number of vulnerabilities with a known exploit discovered on the asset.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances discovered on the asset
+
+
+riskscore
+double precision
+No
+The risk score of the asset.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+day
+date
+No
+The date of the summarization of the asset.
+
+
+
+Dimensional model
+
+fact_asset_discovery
+fact_asset_discovery
+Level of Grain: A snapshot of the discovery dates for an asset.
+Fact Type: accumulating snapshot
+Description: The fact_asset_discovery fact table provides an accumulating snapshot for each asset within the scope of the report and details when the asset was first and last discovered. The discovery date is interpreted as the precise time that the asset was first communicated with during a scan, during the discovery phase of the scan. If an asset has only been scanned once both the first_discovered and last_discovered dates will be the same.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+big_int
+No
+The identifier of the asset.
+dim_asset
+first_discovered
+timestamp without timezone
+No
+The date and time the asset was first discovered during any scan.
+
+
+last_discovered
+timestamp without timezone
+No
+The date and time the asset was last discovered during any scan.
+
+
+
+Dimensional model
+
+Asset Groups
+fact_asset_group
+fact_asset_group
+Level of Grain: An asset group and its current summary information.
+Fact Type: accumulating snapshot
+Description: The fact_asset_group fact table provides the most recent information for each asset group within the scope of the report. Every asset group that any asset within the scope of the report is currently a member of will be available within the scope (not just those specified in the configuration of the report). There will be one fact record for every asset group in the scope of the report. As scans are performed against assets, the information in the fact table will accumulate the most recent information for the asset group (including discovery scans).
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_group_id (as named in versions 1.2.0 and later of the data model) group_id(as named in version 1.1.0)
+bigint
+No
+The identifier of the asset group.
+dim_asset_group
+assets
+bigint
+No
+The number of distinct assets associated to the asset group. If the asset group contains no assets, the count will be zero.
+
+
+vulnerabilities
+bigint
+No
+The number of all vulnerabilities discovered on assets in the asset group.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of all critical vulnerabilities discovered on assets in the asset group.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of all severe vulnerabilities discovered on assets in the asset group.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of all moderate vulnerabilities discovered on assets in the asset group.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered on assets in the asset group.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered on assets in the asset group.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered on assets in the asset group.
+
+
+vulnerabilities_with_exploit
+integer
+No
+The number of vulnerabilities with a known exploit discovered on assets in the asset group.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances discovered on assets in the asset group.
+
+
+riskscore
+double precision
+No
+The risk score of the asset group.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+fact_asset_group_date (startDate, endDate, dateInterval)
+fact_asset_group_date (startDate, endDate, dateInterval)
+Added in version 1.1.0
+Level of Grain: An asset group and its summary information on a specific date.
+Fact Type: periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized values on an asset group by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, a summarized value for each asset group in the scope of the report will be returned for every dateInterval period of time. This will allow trending on asset group information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If an asset group did not exist prior to a summarization date, it will have no record for that date value. The summarized values of an asset group represent the state of the asset group prior to the date being summarized; therefore, if the assets in an asset group have not been scanned before the next summary interval, the values for the asset group will remain the same.
+For example, fact_asset_group_date(‘2013-01-01’, ‘2014-01-01’, INTERVAL ‘1 month’) will return a row for each asset group for every month in the year 2013.
+Arguments
+Column
+Data Type
+Nullable
+Description
+startDate
+date
+No
+The first date to return summarizations for.
+endDate
+date
+No
+The last date to return summarizations for.
+dateInterval
+interval
+No
+The interval between the start and end date to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+group_id
+bigint
+No
+The identifier of the asset group.
+dim_asset_group
+assets
+bigint
+No
+The number of distinct assets associated to the asset group. If the asset group contains no assets, the count will be zero.
+
+
+vulnerabilities
+bigint
+No
+The number of all vulnerabilities discovered on assets in the asset group.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of all critical vulnerabilities discovered on assets in the asset group.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of all severe vulnerabilities discovered on assets in the asset group.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of all moderate vulnerabilities discovered on assets in the asset group.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered on assets in the asset group.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered on assets in the asset group.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered on assets in the asset group.
+
+
+vulnerabilities_with_exploit
+integer
+No
+The number of vulnerabilities with a known exploit discovered on assets in the asset group.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances discovered on assets in the asset group.
+
+
+riskscore
+double precision
+No
+The risk score of the asset group.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+day
+date
+No
+The date of the summarization of the asset.
+
+
+
+Dimensional model
+
+fact_asset_group_policy_date
+fact_asset_group_policy_date
+Type: Periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized policy values on an asset group by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, the summarized policy value for each asset group in the scope of the report will be returned for every dateInterval period of time. This will allow trending on asset group information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If an asset group did not exist prior to a summarization date, it will have no record for that date value. The summarized policy values of an asset group represent the state of the asset group prior to the date being summarized; therefore, if the assets in an asset group have not been scanned before the next summary interval, the values for the asset group will remain the same.
+Arguments
+Column
+Data Type
+Nullable
+Description
+startDate
+date
+No
+The first date to return summarizations for.
+endDate
+date
+No
+The last date to return summarizations for.
+dateInterval
+interval
+No
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+group_id
+bigint
+Yes
+The unique identifier of the asset group.
+dim_asset
+day
+date
+No
+The date which the summarized policy scan results snapshot is taken.
+
+
+policy_id
+bigint
+Yes
+The unique identifier of the policy within a scope.
+dim_policy
+scope
+text
+Yes
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+dim_policy
+assets
+integer
+Yes
+The total number of assets that are in the scope of the report and associated to the asset group.
+
+
+compliant_assets
+integer
+Yes
+The number of assets associated to the asset group that have not failed any while passed at least one policy rule test.
+
+
+noncompliant_assets
+integer
+Yes
+The number of assets associated to the asset group that have failed at least one policy rule test.
+
+
+not_applicable_assets
+integer
+Yes
+The number of assets associated to the asset group that have neither failed nor passed at least one policy rule test.
+
+
+rule_compliance
+numeric
+Yes
+The ratio of rule test results that are compliant with or not applicable to the total number of rule test results.
+
+
+
+Asset Policy
+fact_asset_policy
+fact_asset_policy
+added in version 1.2.0
+Level of Grain: A policy result on an asset
+Fact Type: accumulating snapshot
+Description: This table provides an accumulating snapshot of policy test results on an asset. It displays a record for each policy that was tested on an asset in its most recent scan. Only policies scanned within the scope of report are included.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+last_scan_id
+bigint
+No
+The identifier of the scan.
+dim_scan
+policy_id
+bigint
+Yes
+The unique identifier of the policy within a scope.
+dim_policy
+scope
+text
+Yes
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+dim_policy
+date_tested
+timestamp without timezone
+No
+The end date and time for the scan of the asset that was tested for the policy, in the time zone specified in the report configuration.
+
+
+compliant_rule
+bigint
+No
+The total number of each policy's rules in which all assets are compliant with the most recent scan.
+
+
+noncompliant_rules
+bigint
+
+
+The total number of each policy's rules which at least one asset filed in the most recent scan.
+
+
+not_applicable_rules
+bigint
+
+
+The total number of each policy's rules which at least one asset failed in the most recent scan.
+
+
+rule_compliance
+numeric
+
+
+The ratio of policy rule test results that are compliant or not applicable to the total number of rule test results.
+
+
+
+Dimensional model
+
+fact_asset_policy_date
+fact_asset_policy_date
+added in version 1.3.0
+Type: Periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized policy values on an asset by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, the summarized policy value for each asset in the scope of the report will be returned for every dateInterval period of time. This will allow trending on asset information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If an asset did not exist prior to a summarization date, it will have no record for that date value. The summarized policy values of an asset represent the state of the asset prior to the date being summarized; therefore, if the assets in an asset group have not been scanned before the next summary interval, the values for the asset will remain the same.
+Arguments
+Column
+Data Type
+Nullable
+Description
+startDate
+date
+No
+The first date to return summarizations for.
+endDate
+date
+No
+The last date to return summarizations for.
+dateInterval
+interval
+No
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+Yes
+The unique identifier of the asset.
+dim_asset
+day
+date
+No
+The date which the summarized policy scan results snapshot is taken.
+
+
+scan_id
+bigint
+Yes
+The unique identifier of the scan.
+dim_scan
+policy_id
+bigint
+Yes
+The unique identifier of the policy.
+dim_policy
+scope
+text
+Yes
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+date_tested
+timestamp without timezone
+Yes
+The time the asset was tested with the policy rules.
+
+
+compliant_rules
+integer
+Yes
+The number of rules that all assets are compliant with in the scan.
+
+
+noncompliant_rules
+integer
+Yes
+The number of rules that at least one asset failed in the scan.
+
+
+not_applicable_rules
+integer
+Yes
+The number of rules that are not applicable to the asset.
+
+
+rule_compliance
+numeric
+Yes
+The ratio of rule results that are compliant or not applicable to the total number of rule test results.
+
+
+
+fact_asset_policy_rule
+fact_asset_policy_rule
+added in version 1.3.0, updated in version 2.0.0
+Level of Grain: A policy rule result on an asset
+Fact Type: accumulating snapshot
+Description: This table provides the rule results of the most recent policy scan for an asset within the scope of the report. For each rule, only assets that are subject to that rule and that have a result in the most recent scan are counted.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+policy_id
+bigint
+No
+The identifier of the policy.
+dim_policy
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+rule_id
+bigint
+No
+The identifier of the policy rule.
+dim_policy_rule
+date_tested
+timestamp without timezone
+
+
+The end date and time for the scan of the asset that was tested for the policy, in the time zone specified in the report configuration.
+
+
+status_id
+character(1)
+No
+The identifier of the status for the policy rule finding on the asset (taking into account policy rule overrides).
+dim_policy_result_status
+compliance
+boolean
+No
+Whether the asset is compliant with the rule. True if and only if all of the policy checks for this rule have not failed, or the rule is overridden with the value true on the asset.
+
+
+proof
+text
+Yes
+The proof of the policy checks on the asset.
+
+
+override_id
+bigint
+Yes
+The unique identifier of the policy rule override that is applied to the rule on an asset. If multiple overrides apply to the rule at different levels of scope, the identifier of the override having the true effect on the rule (latest override) is returned.
+dim_policy_rule_override
+override_ids
+bigint[]
+Yes
+The unique identifiers of the policy rule override that are applied to the rule on an asset. If multiple overrides apply to the rule at different levels of scope, the identifier of each override is returned in a comma-separated list.
+dim_policy_rule_override
+last_scan_id
+bigint
+No
+The identifier of the scan with the most recent information being summarized.
+dim_scan
+
+Dimensional model
+
+Asset Scans
+fact_asset_scan
+fact_asset_scan
+Level of Grain: A summary of a completed scan of an asset.
+Fact Type: transaction
+Description: The fact_asset_scan transaction fact provides summary information of the results of a scan for an asset. A fact record will be present for every asset and scan in which the asset was fully scanned in. Only assets configured within the scope of the report and vulnerabilities filtered within the report will take part in the accumulated totals. If no vulnerabilities checks were performed during the scan, for example as a result of a discovery scan, the vulnerability related counts will be zero.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+scan_started
+timestamp without timezone
+No
+The time at which the scan for the asset was started.
+
+
+scan_finished
+timestamp without timezone
+No
+The time at which the scan for the asset completed.
+
+
+vulnerabilities
+bigint
+No
+The number of vulnerabilities found on the asset during the scan.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+aggregated_credential_status_id
+integer
+No
+The status aggregated across all available services for the given asset in the scan.
+
+
+
+Dimensional model
+
+fact_asset_scan_operating_system
+fact_asset_scan_operating_system
+Level of Grain: An operating system fingerprint on an asset in a scan.
+Fact Type: transaction
+Description: The fact_asset_operating_system fact table provides the operating systems fingerprinted on an asset in a scan. The operating system fingerprints represent all the potential fingerprints collected during a scan that can be chosen as the primary or best operating system fingerprint on the asset. If an asset had no fingerprint acquired during a scan, it will have a record with values indicating an unknown fingerprint.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+operating_system_id
+bigint
+No
+The identifier of the operating system that was fingerprinted on the asset in the scan. If a fingerprint was not found, the value will be -1.
+dim_operating_system
+fingerprint_source_id
+integer
+No
+The identifier of the source that was used to acquire the fingerprint. If a fingerprint was not found, the value will be -1.
+dim_fingerprint_source
+certainty
+real
+No
+A value between 0 and 1 that represents the confidence level of the fingerprint. If a fingerprint was not found, the value will be 0.
+
+
+
+Dimensional model
+
+fact_asset_scan_policy
+fact_asset_scan_policy
+Level of Grain: A policy result for an asset in a scan
+Fact Type: transaction
+Description: This table provides the details of policy test results on an asset during a scan. Each record provides the policy test results for an asset for a specific scan. Only policies within the scope of report are included.
+Columns
+As of version 1.3.0, passed_rules and failed_rules are now called compliant_rules and noncompliant_rules.
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+policy_id
+bigint
+No
+The identifier of the policy.
+dim_policy
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+date_tested
+timestamp without timezone
+
+
+The end date and time for the scan of the asset that was tested for the policy, in the timezone specified in the report configuration.
+
+
+compliant_rules
+bigint
+
+
+The total number of each policy's rules for which the asset passed in the most recent scan.
+
+
+noncompliant_rules
+bigint
+
+
+The total number of each policy's rules for which the asset failed in the most recent scan.
+
+
+not_applicable_rules
+bigint
+
+
+The total number of each policy's rules that were not applicable to the asset in the most recent scan.
+
+
+rule_compliance
+numeric
+
+
+The ratio of the policy rule test result that are compliant or not applicable to the total number of rule test results.
+
+
+
+Dimensional model
+
+fact_asset_scan_software
+fact_asset_scan_software
+Level of Grain: A fingerprint for an installed software on an asset in a scan.
+Fact Type: transaction
+Description: The fact_asset_scan_software fact table provides the installed software packages enumerated or detected during a scan of an asset. If an asset had no software packages enumerated in a scan there will be no records in this fact.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+software_id
+bigint
+No
+The identifier of the software fingerprinted.
+dim_software
+fingerprint_source_id
+integer
+No
+The identifier of the source that was used to acquire the fingerprint. If a fingerprint was not found, the value will be -1.
+dim_fingerprint_source
+
+Dimensional model
+
+fact_asset_scan_service
+fact_asset_scan_service
+Level of Grain: A service detected on an asset in a scan.
+Fact Type: transaction
+Description: The fact_asset_scan_service fact table provides the services detected during a scan of an asset. If an asset had no services enumerated in a scan there will be no records in this fact.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+date
+timestamp without timezone
+No
+The date and time at which the service was enumerated.
+
+
+service_id
+integer
+No
+The identifier of the service.
+dim_service
+protocol_id
+smallint
+No
+The identifier of the protocol the service was utilizing.
+dim_protocol
+port
+integer
+No
+The port the service was running on.
+
+
+service_fingerprint_id
+bigint
+No
+The identifier of the fingerprint of the service describing the configuration of the service.
+dim_service_fingerprint
+credential_status_id
+smallint
+No
+The result of the user-provided credentials per asset per scan per service. Services for which credential status is assessed are: SNMP, SSH, Telnet and CIFS.
+dim_credential_status
+
+Dimensional model
+
+Asset Scan Vulnerabilities
+fact_asset_scan_vulnerability
+fact_asset_scan_vulnerability
+Note: This is a category so there is no table to view.
+fact_asset_scan_vulnerability_finding
+Level of Grain: A vulnerability finding on an asset in a scan.
+Fact Type: transaction
+Description: This fact tables provides an accumulating snapshot for all vulnerability findings on an asset in every scan of the asset. This table will display a record for each unique vulnerability discovered on each asset in the every scan of the asset. If multiple occurrences of the same vulnerability are found on the asset, they will be rolled up into a single row with a vulnerability_instances count greater than one. Only vulnerabilities with no active exceptions applies will be displayed.
+Dimensional model
+
+fact_asset_scan_vulnerability_instance
+fact_asset_scan_vulnerability_instance
+Level of Grain: A vulnerability instance on an asset in a scan.
+Fact Type: transaction
+Description: The > fact_asset_scan_vulnerability_instance fact table provides the details of a vulnerability instance discovered during a scan of an asset. Only vulnerability instances found to be vulnerable and with no exceptions actively applied will be present within the fact table. A vulnerability instance is a unique vulnerability result found discovered on the asset. If the multiple occurrences of the same vulnerability are found on the asset, one row will be present for each instance.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The identifier of the vulnerability the finding is for.
+dim_vulnerability
+date
+timestamp without timezone
+No
+The date and time at which the vulnerability finding was detected. This time is the time at which the asset completed scanning during the scan.
+
+
+status_id
+character(1)
+No
+The identifier of the status of the vulnerability finding that indicated the level of confidence in the finding.
+dim_vulnerability_status
+proof
+text
+No
+The proof indicating the reason that the vulnerability exists. The proof is exposed in formatting markup that can be striped using the function proofAsText
+
+
+key
+text
+Yes
+The secondary identifier of the vulnerability finding that discriminates the result from similar results of the same vulnerability on the same asset. This value is optional and will be null when a vulnerability does not need a secondary discriminator.
+
+
+service_id
+integer
+No
+The service the vulnerability was discovered on, or -1 if the vulnerability is not associated with a service.
+dim_service
+port
+integer
+No
+The port on which the vulnerable service was running, or -1 if the vulnerability is not associated with a service.
+
+
+protocol_id
+integer
+No
+The protocol the vulnerable service was running, or -1 if the vulnerability is not associate with a service.
+dim_protocol
+
+Dimensional model
+
+fact_asset_scan_vulnerability_instance_excluded
+fact_asset_scan_vulnerability_instance_excluded
+Level of Grain: A vulnerability instance on an asset in a scan with an active vulnerability exception applied.
+Fact Type: transaction
+Description: The fact_asset_scan_vulnerability_instance_excluded fact table provides the details of a vulnerability instance discovered during a scan of an asset with an exception applied. Only vulnerability instances found to be vulnerable and with exceptions actively applied will be present within the fact table. If the multiple occurrences of the same vulnerability are found on the asset, one row will be present for each instance.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigin
+No
+The identifier of the scan.
+dim_scan
+asset_ id
+bigint
+No
+The identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The identifier of the vulnerability the finding is for.
+dim_vulnerability
+date
+timestamp without timezone
+No
+The date and time at which the vulnerability finding was detected. This time is the time at which the asset completed scanning during the scan.
+
+
+status_id
+character(1)
+No
+The identifier of the status of the vulnerability finding that indicated the level of confidence in the finding.
+dim_vulnerability_status
+proof
+text
+No
+The proof indicating the reason that the vulnerability exists. The proof is exposed in formatting markup that can be striped using the function proofAsText
+
+
+key
+text
+Yes
+The secondary identifier of the vulnerability finding that discriminates the result from similar results of the same vulnerability on the same asset. This value is optional and will be null when a vulnerability does not need a secondary discriminator.
+
+
+service_id
+integer
+No
+The service the vulnerability was discovered on, or -1 if the vulnerability is not associated with a service.
+dim_service
+port
+integer
+No
+The port on which the vulnerable service was running, or -1 if the vulnerability is not associated with a service.
+
+
+protocol_id
+integer
+No
+The protocol the vulnerable service was running, or -1 if the vulnerability is not associate with a service.
+dim_protocol
+
+Dimensional model
+
+fact_asset_vulnerability
+fact_asset_vulnerability
+Note: This is a category so there is no table to view.
+fact_asset_vulnerability_age
+Added in version 1.2.0
+Level of Grain: A vulnerability on an asset.
+Fact Type: accumulating snapshot
+Description: This fact table provides an accumulating snapshot for vulnerability age and occurrence information on an asset. For every vulnerability to which an asset is currently vulnerable, there will be one fact record. The record indicates when the vulnerability was first found, last found, and its current age. The age is computed as the difference between the time the vulnerability was first discovered on the asset, and the current time. If the vulnerability was temporarily remediated, but rediscovered, the age will be from the first discovery time. If a vulnerability was found on a service, remediated and discovered on another service, the age is still computed as the first time the vulnerability was found on any service on the asset.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The unique identifier of the vulnerability.
+dim_vulnerability
+age
+interval
+No
+The age of the vulnerability on the asset, in the interval format.
+
+
+age_in_days
+numeric
+No
+The age of the vulnerability on the asset, specified in days.
+
+
+first_discovered
+timestamp without timezone
+No
+The date on which the vulnerability was first discovered on the asset.
+
+
+most_recently_discovered
+timestamp without timezone
+No
+The date on which the vulnerability was most recently discovered on the asset.
+
+
+reintroduced_date
+timestamp without timezone
+Yes
+The date when the vulnerability was reintroduced on this asset after it was previously remediated.
+
+
+
+fact_asset_vulnerability_finding
+fact_asset_vulnerability_finding
+Added in version 1.2.0
+Level of Grain: A vulnerability finding on an asset.
+Fact Type: accumulating snapshot
+Description: This fact tables provides an accumulating snapshot for all current vulnerability findings on an asset. This table will display a record for each unique vulnerability discovered on each asset in the most recent scan of the asset. If multiple occurrences of the same vulnerability are found on the asset, they will be rolled up into a single row with a vulnerability_instances count greater than one. Only vulnerabilities with no active exceptions applies will be displayed.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset.
+dim_asset
+scan_id
+bigint
+No
+The identifier of the last scan for the asset in which the vulnerability was detected.
+dim_scan
+vulnerability_id
+integer
+No
+The unique identifier of the vulnerability.
+dim_vulnerability
+vulnerability_instances
+bigint
+No
+The number of occurences of the vulnerability detected on the asset, guaranteed to be greater than or equal to one.
+
+
+
+Dimensional model
+
+fact_asset_vulnerability_instance
+fact_asset_vulnerability_instance
+Level of Grain: A vulnerability instance on an asset.
+Fact Type: accumulating snapshot
+Description: This table provides an accumulating snapshot for all current vulnerability instances on an asset. Only vulnerability instance found to be vulnerable and with no exceptions actively applied will be present within the fact table. If the multiple occurrences of the same vulnerability are found on the asset, a row will be present for each instance.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset.
+dim_asset
+scan_id
+bigint
+No
+The identifier of the last scan for the asset in which the vulnerability was detected.
+dim_scan
+vulnerability_id
+integer
+No
+The unique identifier of the vulnerability.
+dim_vulnerability
+vulnerability_exception_id
+integer
+Yes
+The unique identifier of a vulnerability exception that is pending for the vulnerability instance. If a vulnerability instance has no pending exceptions, this value will be null. If multiple pending exceptions apply to the vulnerability at different levels of scope, the identifier of the exception at the lowest (most fine-grained) level is returned.
+dim_vulnerability_exception
+vulnerability_exception_ids
+integer
+Yes
+The unique identifiers of all vulnerability exceptions that are pending for the vulnerability instance. If a vulnerability instance has no pending exceptions, this value will be null. If multiple pending exceptions apply to the vulnerability at different levels of scope, then the the identifier of all exceptions will be returned in a comma-separated value string.
+dim_vulnerability_exception
+date
+timestamp without timezone
+No
+The date and time at which the vulnerability finding was detected. This time is the time at which the asset completed scanning during the scan.
+
+
+proof
+text
+No
+The proof indicating the reason that the vulnerability exists. The proof is exposed in formatting markup that can be striped using the function proofAsText
+
+
+key
+text
+Yes
+The secondary identifier of the vulnerability finding that discriminates the result from similar results of the same vulnerability on the same asset. This value is optional and will be null when a vulnerability does not need a secondary discriminator.
+
+
+service_id
+integer
+No
+The service the vulnerability was discovered on, or -1 if the vulnerability is not associated with a service.
+dim_service
+protocol_id
+integer
+No
+The protocol the vulnerable service was running, or -1 if the vulnerability is not associate with a service.
+dim_protocol
+
+Dimensional model
+
+fact_asset_vulnerability_instance_excluded
+fact_asset_vulnerability_instance_excluded
+Level of Grain: A vulnerability instance on an asset with an active vulnerability exception applied.
+Fact Type: accumulating snapshot
+Description: The fact_asset_vunerability_instance_excluded fact table provides an accumulating snapshot for all current vulnerability instances on an asset. If the multiple occurrences of the same vulnerability are found on the asset, a row will be present for each instance.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The identifier of the vulnerability
+dim_vulnerability
+date_tested
+timestamp without timezone
+No
+The date and time at which the vulnerability finding was detected. This time is the time at which the asset completed scanning during the scan.
+
+
+status_id
+character(1)
+No
+The identifier of the status of the vulnerability finding that indicates the level of confidence of the finding.
+dim_vulnerability_status
+proof
+text
+No
+The proof indicating the reason that the vulnerability exists. The proof is exposed in formatting markup that can be striped using the function proofAsText
+
+
+key
+text
+Yes
+The secondary identifier of the vulnerability finding that discriminates the result from similar results of the same vulnerability on the same asset. This value is optional and will be null when a vulnerability does not need a secondary discriminator.
+
+
+service_id
+integer
+No
+The service the vulnerability was discovered on, or -1 if the vulnerability is not associated with a service.
+dim_service
+port
+integer
+No
+The port on which the vulnerable service was running, or -1 if the vulnerability is not associated with a service.
+
+
+protocol_id
+integer
+No
+The protocol the vulnerable service was running, or -1 if the vulnerability is not associated with a service.
+dim_protocol
+
+Dimensional model
+
+PCI Asset Scans
+fact_pci_asset_scan
+fact_pci_asset_scan
+Note: This is a category so there is no table to view.
+fact_pci_asset_scan_service_finding
+Level of Grain: A service finding on an asset in a scan.
+Fact Type: Transaction
+Description: The fact_pci_asset_scan_service_finding table is the transaction fact for a service finding on an asset for a scan. This fact provides a record for each service on every asset within the scope of the report for every scan it was included in. The level of grain is a unique service finding. If no services were found on an asset in a scan, it will have no records in this fact table. For PCI purposes, each service finding is mapped to a vulnerability. Services for which a version was fingerprinted are mapped to an additional vulnerability.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset
+dim_asset
+scan_id
+bigint
+No
+The unique identifier of the scan the service finding was found in.
+dim_scan
+service_id
+integer
+No
+The identifier of the definition of the service.
+dim_service
+vulnerability_id
+integer
+No
+The unique identifier of the vulnerability.
+dim_vulnerability
+protocol_id
+smallint
+No
+The identifier of the protocol the service was utilizing
+dim_protocol
+port
+integer
+No
+The port the service was running on.
+
+
+
+fact_pci_asset_service_finding
+fact_pci_asset_service_finding
+added in version 1.3.2
+Level of Grain: A service finding on an asset from the latest scan of the asset.
+Fact Type: Accumulating snapshot
+Description: The fact_pci_asset_service_finding fact table provides an accumulating snapshot fact for all service findings on an asset for the latest scan of every asset. The level of grain is a unique service finding. If no services were found on an asset in a scan, it will have no records in this fact table. For PCI purposes, each service finding is mapped to a vulnerability. Services for which a version was fingerprinted are mapped to an additional vulnerability.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The unique identifier of the asset
+dim_asset
+scan_id
+bigint
+No
+The unique identifier of the scan the service finding was found in.
+dim_scan
+service_id
+integer
+No
+The identifier of the definition of the service.
+dim_service
+vulnerability_id
+integer
+No
+The unique identifier of the vulnerability.
+dim_vulnerability
+protocol_id
+smallint
+No
+The identifier of the protocol the service was utilizing
+dim_protocol
+port
+integer
+No
+The port the service was running on.
+
+
+
+fact_pci_asset_special_note
+fact_pci_asset_special_note
+added in version 1.3.2
+Level of Grain: A note finding on a vulnerability or service on an asset (plus port and protocol, if applicable) from the latest scan of the asset.
+Fact Type: Accumulating snapshot
+Description: The fact_pci_asset_special_note fact table provides an accumulating snapshot fact for all vulnerability or service findings with applied special notes on an asset for the latest scan of every asset. The level of grain is a unique vulnerability or service finding, determined by asset, port and protocol.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+
+
+asset_id
+bigint
+No
+The unique identifier of the asset
+dim_asset
+
+
+scan_id
+bigint
+No
+The unique identifier of the scan the service finding was found in.
+dim_scan
+
+
+service_id
+integer
+No
+The identifier of the definition of the service.
+dim_service
+
+
+protocol_id
+smallint
+No
+The identifier of the protocol the service was utilizing
+dim_protocol
+
+
+port
+integer
+No
+The port the service was running on.
+
+
+
+
+pci_note_id
+integer
+No
+The unique identifier of the pci special note applied to the vulnerability or service finding.
+dim_pci_note
+
+
+items_noted
+text
+No
+A list of distinct identifiers for findings on a given asset, port, and protocol.
+
+
+
+
+
+Policy
+fact_policy
+fact_policy
+Level of Grain: A summary of findings related to a policy.
+Fact Type: accumulating snapshot
+Description: This table provides a summary for the results of the most recent policy scan for assets within the scope of the report. For each policy, only assets that are subject to that policy's rules and that have a result in the most recent scan with no overrides are counted.
+Columns
+As of version 1.3.0, a separate value has been created for not_applicable_assets and is no longer included in compliant_assets.
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+policy_id
+bigint
+No
+The identifier of the policy
+dim_policy
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+rule_compliance
+numeric
+No
+The ratio of policy rule test result that are compliant or not applicable to the total number of rule test results.
+
+
+total_assets
+bigint
+No
+The number of assets within the scope of the report that were tested for the policy.
+
+
+compliant_assets
+bigint
+No
+the number of assets that did not fail but passed at least a rule within the policy in the last test.
+
+
+non_compliant_assets
+bigint
+No
+The number of assets that failed at least one rule within the policy in the last test.
+
+
+not_applicable_assets
+bigint
+No
+The number of assets that neither passed nor failed at least a rule within the policy in the last test.
+
+
+asset_compliance
+numeric
+No
+The ratio of assets that are compliant with the policy to the total number of assets that were tested for the policy.
+
+
+
+Dimensional model
+
+fact_policy_group
+fact_policy_group
+Level of Grain: A summary of findings related to a policy group.
+Fact Type: accumulating snapshot
+Description: This table provides a summary for the group rules's results of the most recent policy scan for assets within the scope of the report. All rules that are directly or indirectly descend from it and are counted.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+policy_id
+bigint
+No
+The identifier of the policy.
+dim_policy
+group_id
+bigint
+No
+The identifier of the policy group.
+dim_policy_group
+non_compliant_rules
+integer
+No
+The number of rules that doesn't have 100% asset compliance (taking into account policy rule overrides.)
+
+
+compliant_rules
+integer
+No
+The number of rules that have 100% asset compliance (taking into account policy rule overrides.)
+
+
+rule_compliance
+numeric
+Yes
+The ratio of rule test result that are compliant or not applicable to the total number of rule test results within the policy group. If the group has no rule or no testable rules (rule with no check, hence no result exists), this will have a null value.
+
+
+
+Dimensional model
+
+fact_policy_rule
+fact_policy_rule
+Level of Grain: A summary of findings related to a policy rule.
+Fact Type: accumulating snapshot
+Description: This table provides a summary for the rule results of the most recent policy scan for assets within the scope of the report. For each rule, only assets that are subject to that rule and that have a result in the most recent scan are counted.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+policy_id
+bigint
+No
+The identifier of the policy.
+dim_policy
+rule_id
+bigint
+No
+The identifier of the policy rule.
+dim_policy_rule
+compliant_assets
+integer
+No
+The number of assets that are compliant with the rule (taking into account policy rule overrides.)
+
+
+non_compliant_assets
+integer
+No
+The number of assets that are not compliant with the rule (taking into account policy rule overrides.)
+
+
+not_applicable_assets
+integer
+No
+The number of assets that are not applicable for the rule (taking into account policy rule overrides.)
+
+
+asset_compliance
+numeric
+No
+The ratio of assets that are compliant with the policy rule to the total number of assets that were tested for the policy rule.
+
+
+
+Dimensional model
+
+Fact Remediation
+fact_remediation (count, sort_column)
+fact_remediation (count, sort_column)
+Level of Grain: A solution with the highest level of supercedence and the effect applying that solution would have on the scope of the report.
+Fact Type: accumulating snapshot
+Description: A function which returns a result set of the top "count" solutions showing their impact as specified by the sorting criteria. The criteria can be used to find solutions that have a desirable impact on the scope of the report, and can be limited to a subset of all solutions. The aggregate effect of applying each solution is computed and returned for each record. Only the highest-level superceding solutions will be selected, in other words, only solutions which have no superceding solution.
+Arguments
+Column
+Data Type
+Description
+count
+integer
+The number of solutions to limit the output of this function to. The sorting and aggregation are performed prior to the limit.
+sort_column
+text
+The name and sort order of the column to sort results by. Any column within the fact can be used to sort the results prior to them being limited. Multiple columns can be sorted using a traditional SQL fragment (Example: 'assets DESC, exploits DESC').
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+solution_id
+integer
+No
+The identifier of the solution.
+
+
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+fact_remediation_impact (count, sort_column)
+fact_remediation_impact (count, sort_column)
+added in version 1.1.0
+Level of Grain: A solution with the highest level of supercedence and the affect applying that solution would have on the scope of the report.
+Fact Type: accumulating snapshot
+Description: Fact that provides a summarization of the impact that applying a subset of all remediations would have on the scope of the report. The criteria can be used to find solutions that have a desirable impact on the scope of the report, and can be limited to a subset of all solutions. The aggregate effect of applying all solutions is computed and returned as a single record. This fact will be guaranteed to return one and only one record.
+Arguments
+Column
+Data Type
+Description
+count
+integer
+The number of solutions to limit the output of this function to. The sorting and aggregation are performed prior to the limit.
+sort_column
+text
+The name and sort order of the column to sort results by. Any column within the fact can be used to sort the results prior to them being limited. Multiple columns can be sorted using a traditional SQL fragment (Example: 'assets DESC, exploits DESC').
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+solutions
+integer
+No
+The number of solutions selected and for which the remediation impact is being summarized (will be less than or equal to count).
+
+
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+fact_scan
+fact_scan
+Level of Grain: A summary of the results of a scan.
+Fact Type: accumulating snapshot
+Description: The fact_scan fact provides the summarized information for every scan any asset within the scope of the report was scanned during. For each scan, there will be a record in this fact table with the summarized results.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+integer
+No
+The identifier of the scan.
+dim_scan
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+Sites
+fact_site
+fact_site
+Level of Grain: A summary of the current state of a site.
+Fact Type: accumulating snapshot
+Description: The fact_site table provides a summary record at the level of grain for every site that any asset in the scope of the report belongs to. For each site, there will be a record in this fact table with the summarized results, taking into account any vulnerability filters specified in the report configuration. The summary of each site will display the accumulated information for the most recent scan of each asset, not just the most recent scan of the site.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+last_scan_id
+bigint
+No
+The identifier of the most recent scan for the site.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+Dimensional model
+
+fact_site_date (startDate, endDate, dateInterval)
+fact_site_date (startDate, endDate, dateInterval)
+Added in version 1.1.0
+Level of Grain: A site and its summary information on a specific date.
+Fact Type: periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized values on a site by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, a summarized value for each site in the scope of the report will be returned for every dateInterval period of time. This will allow trending on site information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If a site did not exist prior to a summarization date, it will have no record for that date value. The summarized values of a site represent the state of the site in the most recent scans prior to the date being summarized; therefore, if a site has not been scanned before the next summary interval, the values for the site will remain the same.
+For example, fact_site_date(‘2013-01-01’, ‘2014-01-01’, INTERVAL ‘1 month’) will return a row for each site for every month in the year 2013.
+Arguments
+Column
+Data Type
+Description
+startDate
+date
+The first date to return summarizations for
+endDate
+date
+The last date to return summarizations for.
+dateInterval
+interval
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+last_scan_id
+bigint
+No
+The identifier of the most recent scan for the site.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+day
+date
+No
+The date of the summarization of the asset.
+
+
+
+Dimensional model
+
+fact_site_policy_date
+fact_site_policy_date
+added in version 1.3.0
+Type: Periodic snapshot
+Description: This fact table provides a periodic snapshot for summarized policy values on site by date. The fact table takes three dynamic arguments, which refine what data is returned. Starting from startDate and ending on endDate, the summarized policy value for each site in the scope of the report will be returned for every dateInterval period of time. This will allow trending on site information by a customizable interval of time. In terms of a chart, startDate represents the lowest value in the range, the endDate the largest value in the range, and the dateInterval is the separation of the ticks of the range axis. If a site did not exist prior to a summarization date, it will have no record for that date value. The summarized policy values of a site represent the state of the site prior to the date being summarized; therefore, if the site has not been scanned before the next summary interval, the values for the site will remain the same.
+Arguments
+Column
+Data Type
+Description
+startDate
+date
+The first date to return summarizations for
+endDate
+date
+The last date to return summarizations for.
+dateInterval
+interval
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+bigint
+Yes
+The unique identifier of the site.
+dim_site
+day
+date
+No
+The date when the summarized policy scan results snapshot is taken.
+
+
+policy_id
+bigint
+Yes
+The unique identifier of the policy.
+dim_site
+scope
+text
+Yes
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+assets
+integer
+Yes
+The total number of assets that are in the scope of the report and associated to the asset group.
+
+
+rule_compliance
+numeric
+No
+The ratio of policy rule test result that are compliant or not applicable to the total number of rule test results.
+
+
+compliant_assets
+bigint
+No
+the number of assets that did not fail but passed at least a rule within the policy in the last test.
+
+
+non_compliant_assets
+bigint
+No
+The number of assets that failed at least one rule within the policy in the last test.
+
+
+not_applicable_assets
+bigint
+No
+The number of assets that neither passed nor failed at least a rule within the policy in the last test.
+
+
+
+Tags
+fact_tag
+fact_tag
+Level of Grain: The current summary information for a tag.
+Fact Type: Accumulating snapshot
+Description: The fact_tag table provides an accumulating snapshot fact for the summary information of a tag. The summary information provided is based on the most recent scan of every asset associated with the tag. If a tag has no accessible assets, there will be a fact record with zero counts. Only tags associated with assets, sites, or asset groups in the scope of the report will be present in this fact.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+tag_id
+integer
+No
+The identifier of the tag.
+dim_tag
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+fact_tag_date
+fact_tag_date
+added in version 1.2.1
+Type: Periodic snapshot
+Description: The fact_tag_date table provides a periodic snapshot fact for summarized scan results for a tag over time. Each fact record represents the summary information for a tag in a scan in which the assets associated with that tag were fully and successfully scanned in that day or in the closest prior day.
+This function takes a start date, end date and interval as arguments. If the end date is after the current date, then it will be replaced by the current date. Snapshots will be generated from the start date to the end date based on the interval value. If on a certain day no scan data can be found, a record for that day for all fields, except for the day and assets field, will have a null value.
+Arguments
+Column
+Data Type
+Description
+startDate
+date
+The first date to return summarizations for
+endDate
+date
+The last date to return summarizations for.
+dateInterval
+interval
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+tag_id
+integer
+No
+The identifier of the tag.
+dim_tag
+day
+date
+No
+The date the summary tag results are for.
+
+
+assets
+bigint
+No
+The number of assets that require the solution to be applied. If the solution applies to a vulnerability not detected on any asset, the value may be zero.
+
+
+vulnerabilities
+numeric
+No
+The total number of critical vulnerabilities that would be remediated.
+
+
+critical_vulnerabilities
+bigint
+No
+The number of critical vulnerabilities found of the asset during the scan.
+
+
+severe_vulnerabilities
+bigint
+No
+The number of severe vulnerabilities found of the asset during the scan.
+
+
+moderate_vulnerabilities
+bigint
+No
+The number of moderate vulnerabilities found of the asset during the scan.
+
+
+malware_kits
+integer
+No
+The number of malware kits associated with vulnerabilities discovered during the scan.
+
+
+exploits
+integer
+No
+The number of exploits associated with vulnerabilities discovered during the scan.
+
+
+vulnerabilities_with_malware_kit
+integer
+No
+The number of vulnerabilities with a known malware kit discovered during the scan.
+
+
+vulnerabilities_with_exploits
+integer
+No
+The number of vulnerabilities with a known exploit discovered during the scan.
+
+
+vulnerability_instances
+bigint
+No
+The number of vulnerability instances found discovered during the scan.
+
+
+riskscore
+double precision
+No
+The risk score for the scan.
+
+
+pci_status
+text
+No
+The PCI compliance status; either Pass or Fail.
+
+
+
+fact_tag_policy_date
+fact_tag_policy_date
+added in version 1.3.0
+Type: Periodic snapshot
+Description: The fact_tag_policy_date table provides an accumulating snapshot fact for summarized policy information of a tag. The summarized policy information provided is based on the most recent scan of every asset associated with the tag. If a tag has no accessible assets, there will be a fact record with zero counts. Only tags associated with assets, sites, or asset groups in the scope of the report will be present in this fact.
+Arguments
+Column
+Data Type
+Description
+startDate
+date
+The first date to return summarizations for
+endDate
+date
+The end of the period where the scan results of an asset will be returned. If it is later the the current date, it will be replaced by the later.
+dateInterval
+interval
+The interval between the start and end dates to return summarizations for.
+
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+tag_id
+bigint
+Yes
+The unique identifier of the tag.
+dim_tag
+day
+date
+No
+The date which the summarized policy scan results snapshot is taken.
+
+
+policy_id
+bigint
+Yes
+The unique identifier of the policy within a scope.
+dim_policy
+scope
+text
+Yes
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+assets
+integer
+Yes
+The total number of assets that are in the scope of the report and associated to the asset group.
+
+
+rule_compliance
+numeric
+No
+The ratio of policy rule test result that are compliant or not applicable to the total number of rule test results.
+
+
+compliant_assets
+bigint
+No
+the number of assets that did not fail but passed at least a rule within the policy in the last test.
+
+
+non_compliant_assets
+bigint
+No
+The number of assets that failed at least one rule within the policy in the last test.
+
+
+not_applicable_assets
+bigint
+No
+The number of assets that neither passed nor failed at least a rule within the policy in the last test.
+
+
+
+Vulnerabilities
+fact_vulnerability
+fact_vulnerability
+Level of Grain: A summary of findings of a vulnerability.
+Fact Type: accumulating snapshot
+Description: The fact_vulnerability table provides a summarized record for each vulnerability within the scope of the report. For each vulnerability, the count of assets subject to the vulnerability is measured. Only assets with a finding in their most recent scan with no exception applied are included in the totals.
+Columns
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+affected_assets
+bigint
+No
+The number of assets that have the vulnerability. This count may be zero if no assets are vulnerable.
+
+
+vulnerability_instances
+bigint
+No
+The number of instances or occurrences of the vulnerability across all assets.
+
+
+most_recently_discovered
+timestamp without timezone
+No
+The most recent date and time at which any asset within the scope of the report was discovered to be vulnerable to the vulnerability.
+
+
+
+Dimensional model
+
+Did this page help you?
+Yes
+No
+SQL Query Export
+Understanding the reporting data model: Overview and query design
+SQL Query Export
+Understanding the reporting data model: Dimensions
+On This Page
+Understanding facts
+Fact_all
+Asset Groups
+Asset Policy
+Asset Scans
+Asset Scan Vulnerabilities
+PCI Asset Scans
+Policy
+Fact Remediation
+Sites
+fact_site
+fact_site_date (startDate, endDate, dateInterval)
+fact_site_policy_date
+Tags
+Vulnerabilities
+Junk Scope Dimensions
+The following dimensions are provided to allow the report designer access to the specific configuration parameters related to the scope of the report, including vulnerability filters.
+dim_pci_note
+dim_pci_note
+Description: Dimension for the text descriptions of PCI special notes.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+pci_note_id
+integer
+No
+The code that represents the PCI note description
+
+
+pci_note_text
+text
+No
+The text detailing the PCI special note
+
+
+
+dim_scope_asset
+dim_scope_asset
+Description: Provides access to the assets specifically configured within the configuration of the report. This dimension will contain a record for each asset selected within the report configuration.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset
+
+
+
+dim_scope_asset_group
+dim_scope_asset_group
+Description: Provides access to the asset groups specifically configured within the configuration of the report. This dimension will contain a record for each asset group selected within the report configuration.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_group_id
+bigint
+No
+The identifier of the asset group
+
+
+
+dim_scope_filter_vulnerability_category_include
+dim_scope_filter_vulnerability_category_include
+Description: Provides access to the names of the vulnerability categories that are configured to be included within the scope of the report. One record will be present for every category that is included. If no vulnerability categories are enabled for inclusion, this dimension table will be empty.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+name
+text
+No
+The name of the vulnerability category
+dim_vulnerability_category
+
+dim_scope_filter_vulnerability_severity
+dim_scope_filter_vulnerability_severity
+Description: Provides access to the severity filter enabled within the report configuration. The severity filter is exposed as the maximum severity score a vulnerability can have to be included within the scope of the report. This dimension is guaranteed to only have one record. If no severity filter is explicitly enabled, the minimum severity value will be 0.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+min_severity
+numeric (2)
+No
+The minimum severity that a vulnerability must have to be included in the scope of the report. If no filter is applied to severity, defaults to 0.
+dim_vulnerability_category
+severity_description
+text
+No
+A human-readable description of the severity filter that is enabled.
+
+
+
+dim_scope_filter_vulnerability_status
+dim_scope_filter_vulnerability_status
+Description: Provides access to the vulnerability status filters enabled within the configuration of the report. A record will be present for every status filter that is enabled, and is guaranteed to have between a minimum one and maximum three statuses enabled.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+status_id
+character(1)
+No
+The identifier of the vulnerability status
+dim_vulnerability_status
+
+dim_scope_policy
+dim_scope_policy
+Description: This is the dimension for all policies within the scope of the report. It contains one record for every policy defined in the report scope. If none has been defined, it contains one record for every policy that has been scanned with at least one asset in the scope of the report.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+policy_id
+bigint
+No
+The identifier of the policy.
+
+
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+
+dim_scope_scan
+dim_scope_scan
+Description: Provides access to the scans specifically configured within the configuration of the report. This dimension will contain a record for each scan selected within the report configuration.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigint
+No
+The identifier of the asset scan.
+dim_scan
+
+dim_scope_site
+dim_scope_site
+Description: Provides access to the sites specifically configured within the configuration of the report. This dimension will contain a record for each site selected within the report configuration.
+Type: junk
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+
+Core Entity Dimensions
+Assets
+dim_asset
+dim_asset
+Description: Dimension that provides access to the textual information of all assets configured to be within the scope of the report. Only the information from the most recent scan of each asset is used to provide an accumulating summary. There will be one record in this dimension for every single asset in scope, including assets specified through configuring scans, sites, or asset groups to be within scope.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+
+
+mac_address
+macadr
+Yes
+The primary MAC address of the asset. If an asset has had no MAC address identified, the value will be null. If an asset has multiple MAC addresses, the primary or best address is selected.
+
+
+ip_address
+inet
+No
+The primary IP address of the asset. If an asset has multiple IP addresses, the primary or best address is selected. The IP address may be an IPv4 or IPv6 address.
+
+
+host_name
+text
+Yes
+The primary host name of the asset. If an asset has had no host name identified, the value will be null . If an asset has multiple host names, the primary or best address is selected. If the asset was scanned as a result of configuring the site with a host name target, that name will be guaranteed to be selected ss the primary host name.
+
+
+operating_system_id
+bigint
+No
+The identifier of the operating system fingerprint with the highest certainty on the asset. If the asset has no operating system fingerprinted, the value will be -1.
+dim_operating_system
+host_type_id
+integer
+No
+The identifier of the type of host the asset is classified as. If the host type could not be detected, the value will be -1.
+dim_host_type
+sites
+text
+No
+Comma-separated list of site names.
+
+
+last_assessed_for_vulnerabilities
+timestamp without time zone
+Yes
+The time at which the asset was last scanned for vulnerabilities. If the asset has never been scanned for vulnerabilities, the value will be null.
+
+
+
+dim_asset_file
+dim_asset_file
+Description: Dimension for files and directories that have been enumerated on an asset. Each record represents one file or directory discovered on an asset. If an asset has no files or groups enumerated, there will be no records in this dimension for the asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+file_id
+bigint
+No
+The identifier of the file or directory.
+
+
+type
+text
+No
+The type of item: Directory, File, or Unknown.
+
+
+name
+text
+No
+The name of the file or directory.
+
+
+size
+bigint
+No
+The size of the file or directory in bytes. If the size is unknown, the value will be -1.
+
+
+
+dim_asset_group_account
+dim_asset_group_account
+Description: Dimension that provides the group accounts detected on an asset during the most recent scan of the asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+name
+text
+No
+The name of the group detected.
+
+
+
+dim_asset_group
+dim_asset_group
+Description: Dimension that provides access to the asset groups within the scope of the report. There will be one record in this dimension for every asset group which any asset in the scope of the report is associated to, including assets specified through configuring scans, sites, or asset groups.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_group_id
+integer
+No
+The identifier of the asset group.
+
+
+name
+text
+No
+The name of the asset group.
+
+
+description
+text
+Yes
+The optional description of the asset group. If no description is specified, the value will be null.
+
+
+dynamic_membership
+boolean
+No
+Indicates whether the membership of the asset group is computed dynamically using a dynamic asset filter, or is static (true if this group is a dynamic asset group).
+
+
+
+dim_asset_group_asset
+dim_asset_group_asset
+Description: Dimension that provides access to the relationship between an asset group and its associated assets. For each asset group membership of an asset there will be a record in this table.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_group_id
+integer
+No
+The identifier of the asset group.
+dim_asset_group
+asset_id
+bigint
+No
+The identifier of the asset that belongs to the asset group.
+dim_asset
+
+dim_asset_host_name
+dim_asset_host_name
+Description: Dimension that provides all primary and alternate host names for an asset. Unlike the dim_asset dimension, this dimension will provide detailed information for the alternate host names detected on the asset. If an asset has no known host names, a record with an unknown host name will be present in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+host_name
+text
+No
+The host name associated to the asset, or 'Unknown' if no host name is associated with the asset.
+
+
+source_type_id
+character(1)
+No
+The identifier of the type of source which was used to detect the host name, or '-' if no host name is associated with the asset.
+dim_host_name_source_type
+
+dim_asset_ip_address
+dim_asset_ip_address
+Description: Dimension that provides all primary and alternate IP addresses for an asset. Unlike the dim_asset dimension, this dimension will provide detailed information for the alternate IP addresses detected on the asset. As each asset is guaranteed to have at least one IP address, this dimension will contain at least one record for every asset in the scope of the report.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+ip_address
+inet
+No
+The IP address associated to the asset
+
+
+type
+text
+No
+A description of the type of the IP address, either of the values: “IPv6” or “IPv4”.
+
+
+
+dim_asset_mac_address
+dim_asset_mac_address
+Description: Dimension that provides all primary and alternate MAC addresses for an asset. Unlike the dim_asset dimension, this dimension will provide detailed information for the alternate MAC addresses detected on the asset. If an asset has no known MAC addresses, a record with null MAC address will be present in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset the MAC address was detected on.
+dim_asset
+mac_address
+macaddr
+Yes
+The MAC address associated to the asset, or null if the asset has no known MAC address.
+
+
+
+dim_asset_operating_system
+dim_asset_operating_system
+Description: Dimension that provides the primary and all alternate operating system fingerprints for an asset. Unlike the dim_asset dimension, this dimension will provide detailed information for all operating system fingerprints on an asset. If an asset has no known operating system, a record with an unknown operating system fingerprint will be present in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+operating_system_id
+bigint
+No
+The identifier of the operating system, or -1 if there is no known operating system.
+dim_operating_system
+fingerprint_source_id
+integer
+No
+The source which was used to detect the operating system fingerprint, or -1 if there is no known operating system.
+dim_fingerprint_source
+certainty
+real
+No
+A value between 0 and 1 indicating the confidence level of the fingerprint. The value is 0 if there no known operating system.
+
+
+
+dim_asset_scan
+dim_asset_scan
+Description: Dimension for the relationship between an asset and a scan, for all scans and assets within the scope of the report. A record will be present for each scan of each asset, with the time at which the scan started and completed on the asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigint
+No
+The unique identifier of the scan.
+dim_scan
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+scan_started
+timestamp without time zone
+No
+The time at which the asset was first scanned in the scan. The timestamp is converted into the timezone specified within the report configuration.
+
+
+scan_finished
+timestamp without time zone
+No
+The time at which the asset completed scanning in each scan. The timestamp is converted into the timezone specified within the report configuration.
+
+
+match_value
+real
+Yes
+A value indicating the confidence with which this asset was correlated to an existing asset during a scan.
+
+
+
+dim_asset_service
+dim_asset_service
+Description: Dimension that provides the services detected on an asset during the most recent scan of the asset. If an asset had no services enumerated during the scan, there will be no records in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+service_id
+integer
+No
+The identifier of the service.
+dim_service
+protocol_id
+smallint
+No
+The identifier of the protocol.
+dim_protocol
+port
+integer
+No
+The port on which the service is running.
+
+
+service_fingerprint_id
+bigint
+No
+The identifier of the fingerprint for the service, or -1 if a fingerprint is not available.
+dim_service_fingerprint
+certainty
+real
+No
+A value between 0 and 1 indicating the confidence level of the fingerprint. The value is 0 if there no known operating system.
+
+
+
+dim_asset_service_configuration
+dim_asset_service_configuration
+Description: Dimension that provides the most recent configurations that have been detected on the services of an asset during the latest scan of that asset. Each record represents a configuration value that has been detected on a service (e.g., banner and header values). If an asset has no services detected on it, there will be no records for the asset in the dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+service_id
+integer
+No
+The identifier of the service.
+dim_service
+name
+text
+No
+The name of the configuration value.
+
+
+value
+text
+Yes
+The configuration value, which may be empty or null.
+
+
+port
+integer
+No
+The port on which the service was running.
+
+
+
+dim_asset_service_credential
+dim_asset_service_credential
+Description: Dimension that presents the most recent credential statuses asserted for services on an asset in the latest scan.
+Type: slowly changing
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+service_id
+integer
+No
+The identifier of the service.
+dim_service
+credential_status_id
+smallint
+No
+The identifier of the credential status for the service credential.
+dim_credential_status
+protocol_id
+smallint
+No
+The identifier of the protocol of the service.
+dim_protocol
+port
+integer
+No
+The port on which the service was running.
+
+
+
+dim_asset_socket_details
+dim_asset_socket_details
+Description: Dimension that provides socket listener information detected on an asset during the most recent scan of the asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+ip_address
+text
+No
+The IPv4 address associated with this asset.
+
+
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+listening_port
+text
+No
+The socket's listening port
+
+
+binding_address
+text
+No
+The socket's bound address
+
+
+process_name
+text
+No
+The process bound to this socket's listening port.
+
+
+
+dim_asset_software
+dim_asset_software
+Description: Dimension that provides the software enumerated on an asset during the most recent scan of the asset. If an asset had no software packages enumerated during the scan, there will be no records in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+software_id
+bigint
+No
+The identifier of the software package
+dim_software
+fingerprint_source_id
+integer
+No
+The source which was used to detect the software.
+dim_fingerprint_source
+
+dim_asset_unique_id
+dim_asset_unique_id
+Description: Dimension for the most current unique identifiers of every asset. Each record represents a unique identifier enumerated on the asset. If an asset has no unique identifiers, a record will not be present in this dimension. An asset may have more than one unique identifier enumerated.
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+source
+text
+No
+The source of the unique identifier, usually describing the mechanism used to acquire the unique ID.
+
+
+unique_id
+text
+No
+The unique identifier of the asset.
+
+
+
+dim_asset_user_account
+dim_asset_user_account
+Description: Dimension that provides the user accounts detected on an asset during the most recent scan of the asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+name
+text
+Yes
+The short, abbreviated name of the user account, which may be null.
+
+
+full_name
+text
+Yes
+The longer full name of the user account, which may be null.
+
+
+
+dim_asset_vulnerability_solution
+dim_asset_vulnerability_solution
+Description: Dimension that provides access to what solutions can be used to remediate a vulnerability on an asset. Multiple solutions may be selected as the means to remediate a vulnerability on an asset. This occurs when multiple solutions can be chosen from to remediate a vulnerability. The solutions provided represent only the direct solutions associated with the vulnerability. To view the single best rollup recommended solution, use dim_asset_vulnerability_best_solution instead.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+solution_id
+integer
+No
+The surrogate identifier of the solution that may be used to remediate the vulnerability on the asset.
+dim_solution
+
+dim_asset_vulnerability_best_solution
+dim_asset_vulnerability_best_solution
+Description: Dimension that provides access to the best solution that is recommended to remediate a vulnerability on an asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+solution_id
+integer
+No
+The surrogate identifier of the solution that may be used to remediate the vulnerability on the asset.
+dim_solution
+
+dim_fingerprint_source
+dim_fingerprint_source
+Description: Dimension that provides access to the means by which an operating system or software package were detected on an asset.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+source
+text
+No
+The description of the source.
+
+
+
+dim_mobile_asset_attribute
+dim_mobile_asset_attribute
+Description: Dimension that provides information about mobile devices.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+attribute_name
+text
+No
+The host name associated to the asset, or 'Unknown' if no host name is associated with the asset. Possible names include:\n\n * Mobile Device ID\n * Mobile Device Useragent\n * Mobile Device Owner\n * Mobile Device Model\n * Mobile Device OS
+
+
+attribute_value
+text
+Yes
+The actual value for each of the attributes listed in the attribute_name column, such as the device model or operating system.
+
+
+
+dim_tag
+dim_tag
+Description: Dimension for all tags that any assets within the scope of the report belong to. Each tag has either a direct association or indirection association to an asset based off site or asset group association or off dynamic membership criteria.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+tag_id
+integer
+No
+The identifier of the tag.
+tag_name
+text
+No
+The name of the tag. Names are unique for tags within a type.
+tag_type
+text
+No
+The type of the tag. The supported types are CRITICALITY, LOCATION, OWNER, and CUSTOM.
+source
+text
+No
+The original application that created the tag.
+creation_date
+timestamp
+No
+The date and time at which the tag was created.
+risk_modifier
+float
+Yes
+The risk modifier for a CRITICALITY typed tag.
+color
+text
+Yes
+The risk modifier for a Criticality typed tag.
+
+dim_tag_asset
+dim_tag_asset
+Description: Dimension for the association between an asset and a tag. For each asset there will be one record with an association to only one tag. This dimension only provides current associations. It does not indicate whether an asset was previously associated with a tag.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+tag_id
+integer
+No
+The unique identifier of the tag.
+dim_tag
+asset_id
+bigint
+No
+The unique identifier of the asset.
+dim_asset
+association
+text
+No
+The association that the tag has with the asset. It can be a direct association (tag) or an indirect association through a site (site), a group (group) or the tag dynamic search criteria (criteria).
+
+
+site_id
+integer
+Yes
+The site identifier by which an asset indirectly associates with the tag.
+dim_site
+group_id
+integer
+Yes
+The asset group identifier by which an asset indirectly associates with the tag.
+dim_asset_group
+
+dim_asset_container
+dim_asset_container
+Description: Dimension for containers enumerated on an asset if the asset is a container host. Each record represents one container discovered on an asset. If an asset is not a container host or no containers have been created there will be no rows in this dimension.
+Column
+Data Type
+Nullable
+Description
+asset_id
+bigint
+No
+The unique identifier of the asset.
+container_id
+text
+No
+The identifier of the container.
+name
+text
+No
+The name of the container.
+status
+text
+No
+The status of the container.
+created
+timestamp without time zone
+No
+The date at which the container was created. The timestamp is converted into the timezone specified within the report configuration.
+started
+timestamp without time zone
+Yes
+The date at which the container was last started. The timestamp is converted into the timezone specified within the report configuration.
+finished
+timestamp without time zone
+Yes
+The date at which the container was last stopped/terminated. The timestamp is converted into the timezone specified within the report configuration.
+image_id
+text
+No
+The identifier of the image.
+repository
+text
+No
+The name of the repository the image the contain is based on belongs to.
+
+dim_operating_system
+dim_operating_system
+Description: Dimension provides access to all operating system fingerprints detected on assets in any scan of the assets within the scope of the report.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+operating_system_id
+bigint
+No
+The identifier of the operating system.
+
+
+asset_type
+text
+No
+The type of asset the operating system applies to, which categorizes the operating system fingerprint. This type can distinguish the purpose of the asset that the operating system applies to.
+
+
+description
+text
+No
+The verbose description of the operating system, which combines the family, vendor, name, and version.
+
+
+vendor
+text
+No
+The vendor or publisher of the operating system. If the vendor was not detected, the value will be 'Unknown'.
+
+
+family
+text
+No
+The family or product line of the operating system. If the family was not detected, the value will be 'Unknown'.
+
+
+name
+text
+No
+The name of the operating system. If the name was not detected, the value will be 'Unknown'.
+
+
+version
+text
+No
+The version of the operating system. If the version was not detected, the value will be 'Unknown'.
+
+
+architecture
+text
+No
+The architecture the operating system is built for. If the architecture was not detected, the value will be 'Unknown'.
+
+
+system
+text
+No
+The terse description of the operating system, which combines the vendor and family.
+
+
+cpe
+text
+Yes
+The Common Platform Enumeration (CPE) value that corresponds to the operating system.
+
+
+
+Policies
+dim_policy
+dim_policy
+Description: This is the dimension for all metadata related to a policy. It contains one record for every policy that currently exists in the application.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+policy_id
+bigint
+No
+The identifier of the policy.
+
+
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+title
+text
+No
+The title of the policy as visible to the user.
+
+
+description
+text
+No
+A description of the policy.
+
+
+total_rules
+bigint
+No
+The sum of all the rules within the policy.
+
+
+benchmark_name
+text
+No
+The name of the collection of policies sharing the same source data to which the policy belongs. It includes metadata such as title, name, and applicable systems.
+
+
+benchmark_version
+text
+No
+The version number of the benchmark that includes the policy.
+
+
+category
+text
+No
+A grouping of similar benchmarks based on their source, purpose, or other criteria. Examples include FDCC, USGCB, and CIS.
+
+
+
+dim_policy_group
+dim_policy_group
+Description: This is the dimension for all the metadata for each rule within a policy. It contains one record for every rule within each policy.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+policy_id
+bigint
+No
+The identifier of the policy.
+
+
+parent_group_id
+bigint
+Yes
+The identifier of the group this group directly belongs to. If this group belongs directly to the policy, this will be null.
+
+
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+group_id
+bigint
+No
+The identifier of the group.
+
+
+title
+text
+Yes
+The title of the group that is visible to the user. It describes a logical grouping of the policy rules.
+
+
+description
+text
+Yes
+A description of the group.
+
+
+sub_groups
+integer
+No
+The number of all groups descending from a group.
+
+
+rules
+integer
+No
+The number of all rules directly or indirectly belonging to a group.
+
+
+
+dim_policy_rule
+dim_policy_rule
+Description: This is the dimension for all the metadata for each rule within a policy. It contains one record for every rule within each policy.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+policy_id
+bigint
+No
+The identifier of the policy.
+
+
+parent_group_id
+bigint
+Yes
+The identifier of the group this group directly belongs to. If this group belongs directly to the policy, this will be null.
+
+
+scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+
+
+rule_id
+bigint
+No
+The identifier of the rule.
+
+
+title
+text
+No
+The title of the rule, for each policy, that is visible to the user. It describes a state or condition with which a tested asset should comply.
+
+
+description
+text
+Yes
+A description of the rule.
+
+
+severity
+text
+Yes
+The severity of the rule. A textual value that can be one of the following: "low", "medium", "high", or "unknown".
+
+
+rationale
+text
+Yes
+Descriptive text explaining why compliance is important to the security of the target platform.
+
+
+remediation
+text
+Yes
+Instructions for remediating the non-compliant rule. Also referred to as "fixtext" in the policy content.
+
+
+role
+text
+No
+The rule's role in scoring and reporting. A textual value that can be one of the following: "full", "unchecked", "unscored".
+
+Rules with a role of "unscored" are ignored in compliance calculations.
+
+
+enabled
+boolean
+No
+Determine whether this rule is enabled for compliance evaluation during scans.
+
+
+
+dim_policy_rule_cce_platform_nist_control_mapping
+dim_policy_rule_cce_platform_nist_control_mapping
+Description: This dimension provides all National Institute of Standards and Technology (NIST) Special Publication 800-53 controls mappings for each Common Configuration Enumeration (CCE) within a rule.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+rule_id
+bigint
+No
+The identifier of the policy rule.
+dim_policy_rule
+rule_scope
+text
+No
+The identifier for scope of policy. Policies that are automatically available have "Built-in" scope, whereas policies created by users have scope as "Custom".
+dim_policy_rule
+cce_item_id
+text
+No
+The identifier of the CCE item.
+
+
+platform
+text
+No
+The platform of the CCE.
+
+
+control_name
+text
+No
+The name of the control mapping.
+
+
+date_published
+date
+No
+The published date of the control mapping.
+
+
+
+dim_policy_override
+dim_policy_override
+Description: Dimension that provides access to all policy rule overrides in any state that may apply to any assets within the scope of the report. This includes overrides that have expired or have been superceded by newer overrides.
+Type: slowly changing (Type II)
+Column
+Data Type
+Nullable
+Description
+override_id
+bigint
+No
+The identifier of the policy rule override.
+scope_id
+character(1)
+No
+The identifier for scope of the override.
+submitted_by
+text
+No
+The login name of the user that submitted the policy override.
+submitted_time
+timestamp without time zone
+No
+The date the override was originally created and submitted.
+comments
+text
+No
+The description given at the time the policy override was submitted.
+reviewed_by
+text
+Yes
+The login name of the user that reviewed the policy override. If the override has been submitted and has not been reviewed, the value will be null.
+review_comments
+text
+Yes
+The comment that accompanies the latest review action. If the exception is submitted and has not been reviewed, the value will be null.
+review_state_id
+character(1)
+No
+The identifier of the review state of the override.
+effective_time
+timestamp without time zone
+Yes
+The date at which the rule override become effective. If the rule override is under review, the value will be null.
+expiration_time
+timestamp without time zone
+Yes
+The date at which the rule override will expire. If the exception has no expiration date set, the value is will be null.
+new_status_id
+character(1)
+No
+The identifier of the new value that this override applies to affected policy rule results.
+
+dim_policy_override_scope
+dim_policy_override_scope
+Description: Dimension for the possible scope for a Policy override, such as Global, Asset, or Asset Instance.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+scope_id
+character(1)
+No
+The identifier for scope of the override.
+description
+text
+No
+The description of the policy rule override scope.
+
+dim_policy_override_review_state
+dim_policy_override_review_state
+Description: Dimension for the possible states for a Policy override, such as Submitted, Approved, or Rejected.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+state_id
+character(1)
+No
+The identifier of the policy rule override state.
+description
+text
+No
+The description of the policy rule override state.
+
+dim_policy_result_status
+dim_policy_result_status
+Description: Dimension for the possible statuses for a Policy Check result, such as Pass, Fail, or Not Applicable.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+state_id
+character(1)
+No
+The identifier of the policy rule override status.
+description
+text
+No
+The description of the policy rule override status.
+
+Scans
+dim_scan_engine
+dim_scan_engine
+Description: Dimension for all scan engines that are defined. A record is present for each scan engine to which the owner of the report has access.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+scan_engine_id
+integer
+No
+The unique identifier of the scan engine.
+name
+text
+no
+The name of the scan engine.
+address
+text
+No
+The address (either IP or )
+port
+integer
+No
+The port the scan engine is running on.
+
+dim_scan_template
+dim_scan_template
+Description: Dimension for all scan templates that are defined. A record is present for each scan template in the system.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_template_id
+text
+No
+The identifier of the scan template.
+
+
+name
+text
+No
+The short, human-readable name of the scan template.
+
+
+description
+text
+No
+The verbose description of the scan template.
+
+
+
+dim_service
+dim_service
+Description: Dimension that provides access to the name of a service detected on an asset in a scan. This dimension will contain a record for every service that was detected during any scan of any asset within the scope of the report.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+service_id
+integer
+No
+The identifier of the service.
+
+
+name
+text
+No
+The descriptive name of the service.
+
+
+
+dim_service_fingerprint
+dim_service_fingerprint
+Description: Dimension that provides access to the detailed information of a service fingerprint. This dimension will contain a record for every service fingerprinted during any scan of any asset within the scope of the report.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+service_fingerprint_id
+bigint
+No
+The identifier of the service fingerprint.
+vendor
+text
+No
+The vendor name for the service. If the vendor was not detected, the value will be 'Unknown'.
+family
+text
+No
+The family name or product line of the service. If the family was not detected, the value will be 'Unknown'.
+name
+text
+No
+The name of the service. If the name was not detected, the value will be 'Unknown'.
+version
+text
+No
+The version name or number of the service. If the version was not detected, the value will be 'Unknown'.
+
+dim_site
+dim_site
+Description: Dimension that provides access to the textual information of all sites configured to be within the scope of the report. There will be one record in this dimension for every site which any asset in the scope of the report is associated to, including assets specified through configuring scans, sites, or asset groups.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+
+
+name
+text
+No
+The name of the site.
+
+
+description
+text
+Yes
+The optional description of the site. If the site has no description, the value will be null.
+
+
+risk_factor
+real
+No
+A numeric value that can be used to weight risk score computations. The default value is 1, but possible values from .33 to 3.0 to match the importance level.
+
+
+importance
+text
+No
+The importance of the site. The site importance is one of the following values: ‘Very Low’, ‘Low'’ 'Normal', ‘High’, or ‘Very High.’
+
+
+dynamic_targets
+boolean
+No
+Indicates whether the list of targets scanned by the site are dynamically configured (dynamic site).
+
+
+organization_name
+text
+Yes
+The optional name of the organization the site is associated to.
+
+
+organization_url
+text
+Yes
+The optional URL of the organization the site is associated to.
+
+
+organization_contact
+text
+Yes
+The optional contact name of the organization the site is associated to.
+
+
+organization_job_title
+text
+Yes
+The optional job title of the contact of the organization the site is associated to.
+
+
+organization_email
+text
+Yes
+The optional e-mail of the contact of the organization the site is associated to.
+
+
+organization_phone
+text
+Yes
+The optional phone number of the organization the site is associated to.
+
+
+organization_address
+text
+Yes
+The optional postal address of the organization the site is associated to.
+
+
+organization_city
+text
+Yes
+The optional city name of the organization the site is associated to.
+
+
+organization_state
+text
+Yes
+The optional state name of the organization the site is associated to.
+
+
+organization_country
+text
+Yes
+The optional country name of the organization the site is associated to.
+
+
+organization_zip
+text
+Yes
+The optional zip code of the organization the site is associated to.
+
+
+last_scan_id
+bigint
+No
+The identifier of the latest scan of the site that was run.
+dim_scan
+
+dim_site_asset
+dim_site_asset
+Description: Dimension that provides access to the relationship between a site and its associated assets. For each asset within the scope of the report, a record will be present in this table that links to its associated site. The values in this dimension will change whenever a scan of a site is completed.
+Type: slowly changing (Type II)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+asset_id
+bigint
+No
+The identifier of the asset.
+dim_asset
+
+dim_scan
+dim_scan
+Description: Dimension that provides access to the scans for any assets within the scope of the report.
+Type: slowly changing (Type II)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+scan_id
+bigint
+No
+The identifier of the scan.
+
+
+started
+timestamp without time zone
+No
+The date and time at which the scan started.
+
+
+finished
+timestamp without time zone
+Yes
+The date and time at which the scan finished. If the scan did not complete normally, or is still in progress, this value will be null.
+
+
+status_id
+character(1)
+No
+The current status of the scan.
+dim_scan_status
+type_id
+character(1)
+No
+The type of scan, which indicates whether the scan was started manually by a user or on a schedule.
+dim_scan_type
+scan_name
+text
+Yes
+The name of the scan.
+
+
+
+dim_site_scan
+dim_site_scan
+Description: Dimension that provides access to the relationship between a site and its associated scans. For each scan of a site within the scope of the report, a record will be present in this table.
+Type: slowly changing (Type II)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+scan_id
+bigint
+No
+The identifier of the scan.
+dim_scan
+
+dim_site_scan_config
+dim_site_scan_config
+Description: Dimension for the current scan configuration for a site.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+scan_template_id
+text
+No
+The identifier of the currently configured scan template.
+dim_scan_template
+scan_engine_id
+integer
+No
+The identifier of the currently configured scan engine.
+dim_scan_engine
+
+dim_site_target
+dim_site_target
+Description: Dimension for all the included and excluded targets of a site. For all sites in the scope of the report, a record will be present for each unique IP range and/or host name defined as an included or excluded address in the site configuration. If any global exclusions are applied, these will also be provided at the site level.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+site_id
+integer
+No
+The identifier of the site.
+dim_site
+type
+text
+No
+Either host or IP to indicate the type of address.
+
+
+included
+boolean
+No
+True if the target is included in the configuration, or false if it is excluded.
+
+
+target
+text
+No
+The address of the target. If host, this is the host name. If ip type, this is the IP address in text form (result of running the HOST function).
+
+
+scope
+text
+Yes
+The scope of an exclusion: global if the exclusion is a global exclusion, site if the exclusion is defined on the site, or NULL if included (see above) is true.
+
+
+
+Software and Solutions
+dim_software
+dim_software
+Description: Dimension that provides access to all the software packages that have been enumerated across all assets within the scope of the report. Each record has detailed information for the fingerprint of the software package.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+software_id
+bigint
+No
+The identifier of the software package.
+
+
+vendor
+text
+No
+The vendor that produced or published the software package.
+
+
+family
+text
+No
+The family name or product line of the software package.
+
+
+name
+text
+No
+The name of the software.
+
+
+version
+text
+No
+The version name or number of the software.
+
+
+software_class
+integer
+No
+The description of the software class, which may be 'Unknown'.
+
+
+cpe
+text
+Yes
+The Common Platform Enumeration (CPE) value that corresponds to the software.
+
+
+
+dim_solution
+dim_solution
+Description: Dimension that provides access to all solutions defined.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+solution_id
+integer
+No
+The identifier of the solution.
+nexpose_id
+text
+No
+The identifier of the solution within the application.
+estimate
+interval
+No
+The amount of required time estimated to implement this solution on a single asset. The minimum value is 0 minutes, and the precision is measured in seconds.
+url
+text
+yes
+An optional URL link defined for getting more information about the solution. When defined, this may be a web page defined by the vendor that provides more details on the solution, or it may be a download link to a patch.
+solution_type
+text
+No
+Type of the solution, can be PATCH, ROLLUP or WORKAROUND. A patch type indicates that the solution involves applying a patch to a product or operating system. A rollup patch type indicates that the solution supercedes other vulnerabilities and rolls up many workaround or patch type solutions into one step.
+fix
+text
+Yes
+The steps that are a part of the fix this solution prescribes. The fix will usually contain a list of procedures that must be followed to remediate the vulnerability. The fix will be provided in an HTML format.
+summary
+text
+No
+A short summary of solution which describes the purpose of the solution at a high level and is suitable for use as a summarization of the solution.
+additional_data
+text
+Yes
+Additional information about the solution, in HTML format.
+applies_to
+text
+Yes
+Textual representation of the types of system, software, and/or services that the solution can be applied to. If the solution is not restricted to a certain type of system, software or service, this field will be null.
+
+dim_solution_supercedence
+dim_solution_supercedence
+Description: Dimension that provides all superceding associations between solutions. Unlike dim_solution_highest_supercedence, this dimension provides access to the entire graph of superceding relationships. If a solution does not supercede any other solution, it will not have any records in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+solution_id
+integer
+No
+The identifier of the solution.
+dim_solution
+superceding_solution_id
+integer
+No
+The identifier of the superceding solution.
+dim_solution
+
+dim_solution_highest_supercedence
+dim_solution_highest_supercedence
+Description: Dimension that provides access to the highest level superceding solution for every solution. If a solution has multiple superceding solutions that themselves are not superceded, all will be returned. Therefore a single solution may have multiple records returned. If a solution is not superceded by any other solution, it will be marked as being superceded by itself (to allow natural joining behavior).
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+solution_id
+integer
+No
+The identifier of the solution.
+dim_solution
+superceding_solution_id
+integer
+No
+The surrogate identifier of a solution that is known to supercede the solution, and which itself is not superceded (the highest level of supercedence). If the solution is not superceded, this is the same identifier as solution_id.
+dim_solution
+
+dim_solution_prerequisite
+dim_solution_prerequisite
+Description: Dimension that provides an association between a solution and all the prerequisite solutions that must be applied before it. If a solution has no prerequisites, it will have no records in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+solution_id
+integer
+No
+The identifier of the solution.
+dim_solution
+required_solution_id
+integer
+No
+The identifier of the solution that is required to be applied before the solution can be applied.
+dim_solution
+
+Vulnerabilities
+dim_vulnerability_solution
+dim_vulnerability_solution
+Description: Dimension that provides access to the relationship between a vulnerability and its (direct) solutions. These solutions are only those which are directly known to remediate the vulnerability, and does not include rollups or superceding solutions. If a vulnerability has more than one solution, multiple associated records will be present. If a vulnerability has no solutions, it will have no records in this dimension.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+solution_id
+integer
+No
+The identifier of the solution that vulnerability may be remediated with.
+dim_solution
+
+dim_vulnerability
+dim_vulnerability
+Description: Dimension for all the metadata related to a vulnerability. This dimension will contain one record for every vulnerability included within the scope of the report. Excluding nexpose_id, the values in this dimension will change whenever the risk model of the Security Console is modified.
+Type: slowly changing (Type I)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+
+
+description
+text
+No
+Long description for the vulnerability.
+
+
+nexpose_id
+text
+No
+A textual identifier of a vulnerability unique to the application.
+
+
+title
+text
+No
+The short, succinct title of the vulnerability.
+
+
+date_published
+date
+No
+The date that the vulnerability was published by the source of the vulnerability (third-party, software vendor, or another authoring source).
+
+
+date_added
+date
+No
+The date that the vulnerability was first checked by the application.
+
+
+severity_score
+smallint
+No
+The numerical severity of the vulnerability, measured on a scale of 0 to 10 using whole numbers. A value of zero indicates low severity, and a value of 10 indicates high severity.
+
+
+severity
+text
+No
+A human-readable description of the severity_score value. Possible values are 'Critical' , 'Severe' , and 'Moderate'.
+
+
+pci_severity_score
+smallint
+No
+The numerical PCI severity score of the vulnerability, measured on a scale of 1 to 5 using whole numbers.
+
+
+pci_status
+text
+No
+A human-readable description as to whether if the vulnerability was detected on an asset in a scan it would cause a PCI failure. Possible values are ' Pass ' or ' Fail '.
+
+
+riskscore
+double precision
+No
+The risk score of the vulnerability as computed by the risk model currently configured on the Security Console.
+
+
+cvss_vector
+text
+No
+A full CVSS vector in the CVSSv2 notation.
+
+
+cvss_access_vector_id
+character(1)
+No
+The access vector (AV) code that represents the CVSS access vector value of the vulnerability.
+dim_cvss_access_vector_type
+cvss_access_complexity_id
+character(1)
+No
+The access complexity (AC) code that represents the CVSS access complexity value of the vulnerability.
+dim_cvss_access_complexity
+cvss_authentication_id
+character(1)
+No
+The authentication (Au) code that represents the CVSS authentication value of the vulnerability.
+dim_cvss_access_authentication_type
+cvss_confidentiality_impact_id
+character(1)
+No
+The confidentiality impact (C) code that represents the CVSS confidentiality impact value of the vulnerability.
+dim_cvss_confidentiality_impact
+cvss_integrity_impact_id
+character(1)
+No
+The integrity impact (I) code that represents the CVSS integrity impact value of the vulnerability.
+dim_cvss_integrity_impact_type
+cvss_availability_impact_id
+character(1)
+No
+The availability impact (A) code that represents the CVSS availability impact value of the vulnerability.
+dim_cvss_availability_impact
+cvss_score
+real
+No
+The CVSS score of the vulnerability, on a scale of 0 to 10.
+
+
+pci_adjusted_cvss_score
+real
+No
+Value between 0 and 10 representing the CVSS score of the vulnerability, adjusted if necessary according to PCI rules.
+
+
+cvss_exploit_score
+real
+No
+The base exploit score contribution to the CVSS score.
+
+
+cvss_impact_score
+real
+No
+The base impact score contribution to the CVSS score.
+
+
+cvss_v2_score
+real
+No
+Value between 0 and 10 representing the CVSS Version 2.0 score of the vulnerability.
+
+
+cvss_v2_exploit_score
+real
+No
+Base score for the exploitability of a vulnerability that is used to compute the overall CVSS Version 2.0 score.
+
+
+cvss_v2_impact_score
+real
+No
+Base score for the impact of a vulnerability that is used to compute the overall CVSS Version 2.0 score.
+
+
+cvss_v3_vector
+text
+Yes
+The full CVSS vector in CVSS Version 3.0 notation.
+
+
+cvss_v3_attack_vector
+character(1)
+Yes
+Attack Vector (AV) code that represents the CVSS attack vector value of the vulnerability.
+dim_cvssv3_attack_vector
+cvss_v3_attack_complexity
+character(1)
+Yes
+Attack Complexity (AC) code that represents the CVSS attack complexity value of the vulnerability.
+dim_cvssv3_attack_complexity
+cvss_v3_privileges_required
+character(1)
+Yes
+Privileges Required (PR) code that represents the CVSS privilege required value of the vulnerability.
+dim_cvssv3_privileges_required
+cvss_v3_user_interaction
+character(1)
+Yes
+User Interaction (UI) code that represents the CVSS user interaction value of the vulnerability.
+dim_cvssv3_user_interaction
+cvss_v3_scope
+character(1)
+Yes
+Scope (S) code that represents the CVSS scope value of the vulnerability.
+dim_cvssv3_scope
+cvss_v3_confidentiality_impact
+character(1)
+Yes
+Confidentiality Impact (C) code that represents the CVSS confidentiality impact value of the vulnerability.
+dim_cvssv3_confidentiality_impact
+cvss_v3_integrity_impact
+character(1)
+Yes
+Integrity Impact (I) code that represents the CVSS integrity impact value of the vulnerability.
+dim_cvssv3_integrity_impact
+cvss_v3_availability_impact
+character(1)
+Yes
+Availability Impact (A) code that represents the CVSS availability impact value of the vulnerability.
+dim_cvssv3_availability_impact
+cvss_v3_score
+real
+Yes
+Value between 0 and 10 representing the CVSS Version 3.0 score of the Vulnerability.
+
+
+cvss_v3_impact_score
+real
+Yes
+Base score for the impact of a vulnerability that is used to compute the overall CVSS Version 3.0 score.
+
+
+cvss_v3_exploit_score
+real
+Yes
+Base score for the exploitability of a vulnerability that is used to compute the overall CVSS Version 3.0 score.
+
+
+pci_special_notes
+text
+Yes
+Notes attached to the vulnerability according to PCI rules.
+
+
+denial_of_service
+boolean
+No
+Indicates whether the vulnerability is classified as a denial-of-service vulnerability.
+
+
+exploits
+bigint
+No
+The number of distinct exploits that are associated with the vulnerability. If no exploits are associated to this vulnerability, the value will be zero.
+
+
+malware_kits
+bigint
+No
+The number of malware kits that are associated with the vulnerability. If no malware kits are associated to this vulnerability, the value will be zero.
+
+
+date_modified
+date
+No
+The date the vulnerability was last modified in a content release. The granularity of the date is a day.
+
+
+
+dim_vulnerability_category
+dim_vulnerability_category
+Description: Dimension that provides the relationship between a vulnerability and a vulnerability category.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+category_id
+integer
+No
+The identifier of the vulnerability category.
+
+
+vulnerability_id
+integer
+No
+The identifier of the vulnerability the category applies to.
+dim_vulnerability
+category_name
+text
+No
+The descriptive name of the category.
+
+
+
+dim_vulnerability_exception
+dim_vulnerability_exception
+Description: Dimension that provides access to all vulnerability exceptions in any state (including deleted) that may apply to any assets within the scope of the report. The exceptions available in this dimension will change as the their state changes, or any new exceptions are created over time.
+Type: slowly changing (Type II)
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_exception_id
+integer
+No
+The identifier of the vulnerability exception.
+
+
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+scope_id
+character(1)
+No
+The scope of the vulnerability exception, which dictates what assets the exception applies to.
+dim_exception_scope
+reason_id
+character(1)
+No
+The reason that the vulnerability exception was submitted.
+dim_exception_reason
+additional_comments
+text
+Yes
+Optional comments associated with the last state change of the vulnerability exception.
+
+
+submitted_date
+timestamp without time zone
+No
+The date the vulnerability was originally created and submitted, in the time zone specified by the report configuration.
+
+
+submitted_by
+text
+No
+The login name of the user that submitted the vulnerability exception.
+
+
+review_date
+timestamp without time zone
+Yes
+The date the vulnerability exception was reviewed, in the time zone specified by the report configuration. If the exception was rejected, approved, or recalled, this is the date of the last state transition made on the exception. If an exception is submitted and has not been reviewed, the value will be null.
+
+
+reviewed_by
+text
+Yes
+The login name of the user that reviewed the vulnerability exception. If the exception is submitted and has not been reviewed, the value will be null.
+
+
+review_comment
+text
+Yes
+The comment that accompanies the latest review action. If the exception is submitted and has not been reviewed, the value will be null.
+
+
+expiration_date
+date
+Yes
+The date at which the vulnerability exception will expire. If the exception has no expiration date set, the value is will be null.
+
+
+status_id
+character(1)
+No
+The status (state) of the vulnerability exception.
+dim_exception_status
+site_id
+integer
+Yes
+The identifier of the site that the exception applies to. If this is not a site-level exception, the value will be null.
+dim_site
+asset_id
+bigint
+Yes
+The identifier of the asset that the exception applies to. If this is not an asset-level or instance-level exception, the value will be null.
+dim_asset
+port
+integer
+Yes
+The port that the exception applies to. If this is not an instance-level exception, the value will be null.
+
+
+key
+text
+Yes
+The secondary identifier of the vulnerability the exception applies to. If this is not an instance-level exception, the value will be null.
+
+
+group_id
+integer
+Yes
+The identifier of the asset group that the exception applies to. If this is not a group-level exception, the value will be null.
+
+
+
+dim_vulnerability_exploit
+dim_vulnerability_exploit
+Description: Dimension that provides the relationship between a vulnerability and an exploit.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+exploit_id
+integer
+No
+The identifier of the exploit.
+
+
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+title
+text
+No
+The short, succinct title of the exploit.
+
+
+description
+text
+Yes
+The optional verbose description of the exploit. If there is no description, the value is null.
+
+
+skill_level
+text
+No
+The skill level required to perform the exploit. Possible values include 'Expert', 'Novice', and 'Intermediate'.
+
+
+source_id
+text
+No
+The source which defined and published the exploit. Possible values include 'Exploit DB' and 'Metasploit Module'.
+
+
+source_key
+text
+No
+The identifier of the exploit in the source system, used as a key to index into the publisher's repository of metadata for the exploit.
+
+
+
+dim_vulnerability_malware_kit
+dim_vulnerability_malware_kit
+Description: Dimension that provides the relationship between a vulnerability and a malware kit.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_id
+integer
+No
+The identifier of the vulnerability the malware kit is associated to.
+dim_vulnerability
+name
+text
+No
+The name of the malware kit.
+
+
+popularity
+text
+No
+
+
+
+
+The popularity of the malware kit, which signifies how common or accessible it is. Possible values include Rare, Uncommon, Occasional, Common, Popular, Favored, and Unknown.
+
+
+
+
+
+
+
+
+
+dim_vulnerability_reference
+dim_vulnerability_reference
+Description: Dimension that provides the references associated to a vulnerability, which provide links to external sources of data and information related to a vulnerability.
+Type: normal
+Column
+Data Type
+Nullable
+Description
+Associated Dimension
+vulnerability_id
+integer
+No
+The identifier of the vulnerability.
+dim_vulnerability
+source
+text
+No
+The name of the source of the vulnerability information. The value is guaranteed to be provided in all upper-case characters.
+
+
+reference
+text
+No
+The reference that keys or links into the source of the vulnerability information. If the source is 'URL', the reference is 'URL'. Otherwise, the value is typically a key or identifier that indexes into the source repository.
+
+
+
+Enumerated and Constant Dimensions
+The following dimensions are static in nature and all represent mappings of codes, identifiers, and other constant values to human readable descriptions.
+dim_cvss_access_vector
+dim_cvss_access_vector
+Description: Dimension for the possible CVSS access vector values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the access vector type.
+description
+text
+No
+The description of the access vector type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+L
+Local
+A vulnerability exploitable with only local access requires the attacker to have either physical access to the vulnerable system or a local (shell) account.
+A
+Adjacent Network
+A vulnerability exploitable with adjacent network access requires the attacker to have access to either the broadcast or collision domain of the vulnerable software.
+N
+Network
+A vulnerability exploitable with network access means the vulnerable software is bound to the network stack and the attacker does not require local network access or local access.
+
+dim_aggregated_credential_status
+dim_aggregated_credential_status
+Description: Dimension the containing the status aggregated across all available services for the given asset in the given scan.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+aggregated_credential_status_id
+smallint
+No
+The credential status ID associated with the fact_asset_scan_service.
+aggregated_credential_status_description
+text
+No
+The human-readable description of the credential status.
+
+Values
+Notes & Detailed Description
+aggregated_credential_status_id
+Description
+'No credentials supplied'
+1
+One or more services for which credential status is reported were detected in the scan, but there were no credentials supplied for any of them.
+'All credentials failed'
+2
+One or more services for which credential status is reported were detected in the scan, and all credentials supplied for these services failed to authenticate.
+'Credentials partially successful'
+3
+At least two of the four services for which credential status is reported were detected in the scan, and for some services the provided credentials failed to authenticate, but for at least one there was a successful authentication.
+'All credentials successful'
+4
+One or more services for which credential status is reported were detected in the scan, and for all of these services for which credentials were supplied authentication with provided credentials was successful.
+N/A
+-1
+None of the four applicable services (SNMP, SSH, Telnet, CIFS) was discovered in the scan.
+
+dim_credential_status
+dim_credential_status
+Description: Dimension for the scan service credential status in human-readable form.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+credential_status_id
+smallint
+No
+The credential status ID associated with the fact_asset_scan_service.
+credential_status_description
+text
+No
+The human-readable description of the credential status.
+
+Values
+Notes & Detailed Description
+credential_status_id
+Description
+'No credentials supplied'
+1
+No credentials were supplied. Applicable to all four services (SNMP, SSH, Telnet, or CIFS).
+Login Failed
+2
+The login failed. Applicable to all four services (SNMP, SSH, Telnet, or CIFS).
+Login Successful
+3
+The login succeeded. The login failed. Applicable to all four services (SNMP, SSH, Telnet, or CIFS).
+Allowed elevation of privileges
+4
+Elevation of privileges was allowed. Applicable to SSH only.
+Root
+5
+The credentials allowed login as root. Applicable to SSH and Telnet only.
+Login as local admin
+6
+The credentials allowed login as local admin. Applicable to CIFS only.
+N/A
+-1
+This status is listed for all the services that are not SNMP, SSH, Telnet, or CIFS.
+
+dim_cvss_access_complexity
+dim_cvss_access_complexity
+Description: Dimension for the possible CVSS access complexity values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the complexity type.
+description
+text
+No
+The description of the access complexity type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+H
+High
+Specialized access conditions exist.
+M
+Medium
+The access conditions are somewhat specialized.
+L
+Low
+Specialized access conditions or extenuating circumstances do not exist.
+
+dim_cvss_authentication
+dim_cvss_authentication
+Description: Dimension for the possible CVSS authentication values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the authentication type.
+description
+text
+No
+The description of the authentication type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+M
+Multiple
+Exploiting the vulnerability requires that the attacker authenticate two or more times, even if the same credentials are used each time.
+S
+Single
+The vulnerability requires an attacker to be logged into the system (such as at a command line or via a desktop session or web interface).
+N
+None
+Authentication is not required to exploit the vulnerability.
+
+dim_cvss_confidentiality_impact
+dim_cvss_confidentiality_impact
+Description: Dimension for the possible CVSS confidentiality impact values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the confidentiality impact type.
+description
+text
+No
+The description of the confidentiality impact type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+P
+Partial
+There is considerable informational disclosure. Access to some system files is possible, but the attacker does not have control over what is obtained, or the scope of the loss is constrained.
+C
+Complete
+There is total information disclosure, resulting in all system files being revealed. The attacker is able to read all of the system's data (memory, files, etc.).
+N
+None
+There is no impact to the confidentiality of the system.
+
+dim_cvss_integrity_impact
+dim_cvss_integrity_impact
+Description: Dimension for the possible CVSS integrity impact values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the integrity impact type.
+description
+text
+No
+The description of the integrity impact type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+P
+Partial
+Modification of some system files or information is possible, but the attacker does not have control over what can be modified, or the scope of what the attacker can affect is limited.
+C
+Complete
+There is a total compromise of system integrity. There is a complete loss of system protection, resulting in the entire system being compromised. The attacker is able to modify any files on the target system.
+N
+None
+There is no impact to the integrity of the system.
+
+dim_cvss_availability_impact
+dim_cvss_availability_impact
+Description: Dimension for the possible CVSS availability impact values.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the availability impact type.
+description
+text
+No
+The description of the availability impact type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+P
+Partial
+There is reduced performance or interruptions in resource availability.
+C
+Complete
+There is a total shutdown of the affected resource. The attacker can render the resource completely unavailable.
+N
+None
+There is no impact to the availability of the system.
+
+dim_exception_scope
+dim_exception_scope
+Description: Dimension that provides all scopes a vulnerability exception can be defined on.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+scope_id
+character(1)
+No
+The identifier of the scope of a vulnerability exception.
+short_description
+text
+No
+A succinct, one-word description of the scope.
+description
+text
+No
+A verbose description of the scope.
+
+Values
+Notes & Detailed Description
+scope_id
+short_description
+Description
+G
+Global
+All instances (all assets)
+The vulnerability exception is applied to all assets in every site.
+S
+Site
+All instances in this site
+The vulnerability exception is applied to only assets within a specific site.
+D
+Asset
+All instances on this asset
+The vulnerability exception is applied to all instances of the vulnerability on an asset.
+I
+Instance
+Specific instance on this asset
+The vulnerability exception is applied to a specific instances of the vulnerability on an asset (either all instances without a port, or instances sharing the same port and key).
+
+dim_exception_reason
+dim_exception_reason
+Description: Dimension for all possible reasons that can be used within a vulnerability exception.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+reason_id
+character(1)
+No
+The identifier for the reason of the vulnerability exception.
+description
+text
+No
+The description for the reason of the vulnerability exception.
+
+Values
+Notes & Detailed Description
+reason_id
+Description
+F
+False positive
+The vulnerability is a false-positive and was confirmed to be an inaccurate result.
+C
+Compensating Control
+There is a compensating control in place unique to the site or environment that mitigates the vulnerability.
+R
+Acceptable Risk
+The vulnerability is deemed an acceptable risk to the organization.
+U
+Acceptable use
+The vulnerability is deemed to be acceptable with normal use (not a vulnerability to the organization).
+O
+Other
+Any other reason not covered in a build-in reason.
+
+dim_exception_status
+dim_exception_status
+Description: Dimension for the possible statuses (states) of a vulnerability exception.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+status_id
+character(1)
+No
+The identifier of the exception status.
+description
+text
+No
+The description or name of the exception status.
+
+Values
+Notes & Detailed Description
+status_id
+Description
+U
+Under Review
+The exception was submitted and is waiting for review from an approver.
+A
+Approved
+The exception was approved by a reviewer and is actively applied.
+R
+Rejected
+The exception was rejected by the reviewer and requires further action by the submitter.
+D
+Recalled
+The exception was deleted by the reviewer or recalled by the submitted.
+E
+Expired
+The exception has expired due to an expiration date.
+
+dim_host_name_source_type
+dim_host_name_source_type
+Description: Dimension for the types of sources used to detect a host name on an asset.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the source type.
+description
+text
+No
+The description or name of the source type.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+T
+User Defined
+The host name of the asset was acquired as a result of being specified as a target within the scan (in the site configuration).
+D
+DNS
+The host name discovered during a scan using the domain name system (DNS).
+N
+NetBIOS
+The host name was discovered during a scan using the NetBios protocol.
+L
+LDAP
+The host name was discovered using LDAP.
+E
+EPSEC
+The host name was discovered using VMWare EPSEC.
+C
+DCE
+The host name was discovered using DCE.
+-
+N/A
+The source of the host name could not be determined or is unknown.
+
+dim_host_type
+dim_host_type
+Description: Dimension for the types of hosts that an asset can be classified as.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+host_type_id
+integer
+No
+The identifier of the host type.
+description
+text
+No
+The description of the host type.
+
+Values
+Notes & Detailed Description
+host_type_id
+Description
+1
+Virtual Machine
+The asset is a generic virtualized asset resident within a virtual machine.
+2
+Hypervisor
+The asset is a virtualized asset within Hypervisor.
+3
+Bare Metal
+The asset is a physical machine.
+4
+Mobile
+The asset type is a mobile device (added in version 2.0.1)
+-1
+Unknown
+The asset type is unknown or could not be determined.
+
+dim_scan_status
+dim_scan_status
+Description: Dimension for all possible statuses of a scan.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+status_id
+character(1)
+No
+The identifier of the status a scan can have.
+description
+text
+No
+The description of the status code.
+
+Values
+Notes & Detailed Description
+status_id
+Description
+A
+Aborted
+The scan was either manually or automatically aborted by the system. If a scan is marked as aborted, it usually terminated abnormally. Aborted scans can occur when an engine is interrupted (terminated) while a scan is actively running.
+C
+Successful
+The scan was successfully completed and no errors were encountered (this includes scans that were manually or automatically resumed).
+U
+Running
+The scan is actively running and is in a non-paused state.
+S
+Stopped
+The scan was manually stopped by the user.
+E
+Failed
+The scan failed to launch or run successfully.
+P
+Paused
+The scan is halted because a user manually paused the scan or the scan has met its maximum scan duration.
+-
+Unknown
+The status of the scan cannot be determined.
+
+dim_scan_type
+dim_scan_type
+Description: Dimension for all possible types of scans.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+type_id
+character(1)
+No
+The identifier of the type a scan can be.
+description
+text
+No
+The description of the type code.
+
+Values
+Notes & Detailed Description
+type_id
+Description
+A
+Manual
+The scan was manually launched by a user.
+S
+Scheduled
+The scan was launched automatically by the Security Console on a schedule.
+I
+Import
+
+
+E
+Adapative
+
+
+G
+Agent
+
+
+-
+Unknown
+The scan type could not be determined or is unknown.
+
+dim_vulnerability_status
+dim_vulnerability_status
+Description: Dimension for the statuses a vulnerability finding result can be classified as.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+status_id
+character(1)
+No
+The identifier of the vulnerability status.
+description
+text
+No
+The description of the vulnerability status.
+
+Values
+Notes & Detailed Description
+status_id
+Description
+2
+Confirmed vulnerability
+The vulnerability was discovered and either exploited or confirmed.
+3
+Vulnerable version
+The vulnerability was discovered within a version of the installed software or operating system.
+9
+Potential vulnerability
+The vulnerability was discovered, but not exploited or confirmed.
+
+dim_protocol
+dim_protocol
+Description: Dimension that provides all possible protocols that a service can be utilizing on an asset.
+Type: normal
+Columns
+Column
+Data Type
+Nullable
+Description
+protocol_id
+integer
+No
+The identifier of the protocol
+name
+text
+No
+The name of the protocol.
+description
+text
+No
+The non-abbreviated description of the protocol.
+
+Values
+Notes & Detailed Description
+protocol_id
+Description
+0
+IP
+Internet Protocol
+1
+ICMP
+Internet Control Message Protocol
+2
+IGMP
+Internet Group Management Protocol
+3
+GGP
+Gateway-to-Gateway Protocol
+6
+TCP
+Transmission Control Protocol
+12
+PUP
+PARC Universal Protocol
+17
+UDP
+User Datagram Protocol
+22
+IDP
+Internet Datagram Protocol
+50
+ESP
+Encapsulating Security Payload
+77
+ND
+Network Disk Protocol
+255
+RAW
+Raw Packet
+-1
+
+
+N/A
+
+Did this page help you?
+Yes
+No
+SQL Query Export
+Understanding the reporting data model: Facts
+SQL Query Export
+Understanding the reporting data model: Functions
+On This Page
+Junk Scope Dimensions
+Core Entity Dimensions
+Assets
+Policies
+Scans
+Software and Solutions
+Vulnerabilities
+Enumerated and Constant Dimensions

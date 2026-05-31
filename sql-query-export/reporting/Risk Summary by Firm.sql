@@ -1,5 +1,5 @@
 -- Risk Summary by Firm
--- One row per member firm with total assets, risk score and severity counts.
+-- One row per business unit with total assets, risk score and severity counts.
 -- Firm identity is derived by mapping site and asset-group name prefixes to a
 -- canonical firm name. The firm_name_map below is a TEMPLATE — replace the example rows with your own prefixes.
 
