@@ -2,6 +2,10 @@
 
 This repository contains SQL queries for InsightVM reports and data analysis, organized by category.
 
+## Schema reference
+
+All queries target the InsightVM (Nexpose) PostgreSQL Reporting Data Model. Before writing or reviewing a query, consult [`docs/SCHEMA.md`](docs/SCHEMA.md) (quick reference + confirmed gotchas) and the full model in [`docs/InsightVM-Reporting-Data-Model.txt`](docs/InsightVM-Reporting-Data-Model.txt). Verify every table and column against those files.
+
 ## Folder Structure
 
 ```
@@ -11,6 +15,9 @@ sql-query-export/
 ├── authentication/
 ├── reporting/
 └── vulnerability-tracking/
+docs/
+├── InsightVM-Reporting-Data-Model.txt   (full Rapid7 data model reference)
+└── SCHEMA.md                            (query-author quick reference + gotchas)
 ```
 
 ## Query Index
@@ -31,7 +38,7 @@ sql-query-export/
 | [Browser Extension Report.sql](sql-query-export/asset-management/Browser%20Extension%20Report.sql) | Inventories browser extensions and plugins detected across all assets using broad name/family/vendor pattern matching |
 | [Duplicate Assets.sql](sql-query-export/asset-management/Duplicate%20Assets.sql) | Finds hostnames assigned to more than one asset ID, which may indicate duplicate records |
 | [Software Inventory and EOL Report.sql](sql-query-export/asset-management/Software%20Inventory%20and%20EOL%20Report.sql) | Comprehensive software inventory with risk classification highlighting End-of-Support and high-risk software versions |
-| [Operating System EOL Inventory.sql](sql-query-export/asset-management/Operating%20System%20EOL%20Inventory.sql) | Inventories OS families/versions with asset counts and flags likely End-of-Life platforms via common name patterns (review/extend the pattern list) |
+| [Operating System EOL Inventory.sql](sql-query-export/asset-management/Operating%20System%20EOL%20Inventory.sql) | Lists assets on obsolete/end-of-life operating systems using Rapid7's built-in "Obsolete" vulnerability category (not hard-coded version patterns), grouped by OS with asset counts |
 
 ### authentication
 
