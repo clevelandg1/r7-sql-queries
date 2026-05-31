@@ -60,9 +60,9 @@ docs/
 | [Risk Summary by Firm.sql](sql-query-export/reporting/Risk%20Summary%20by%20Firm.sql) | One row per member firm with total assets, risk score and severity counts, derived from site/group name prefixes |
 | [Risk Detail by Firm and Asset.sql](sql-query-export/reporting/Risk%20Detail%20by%20Firm%20and%20Asset.sql) | Asset-level drill-down behind the per-firm summary, one row per asset |
 | [Mean Time To Remediate by Severity.sql](sql-query-export/reporting/Mean%20Time%20To%20Remediate%20by%20Severity.sql) | Average and median days from first discovery to inferred remediation, per severity, with min/max |
-| [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Summarizes vulnerabilities under active (non-expired) exceptions grouped by reason and status, with the accepted risk each group represents |
+| [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Risk masked by approved, non-expired vulnerability exceptions, grouped by exception reason, with vulnerabilities de-duplicated so risk is not double-counted |
 | [Executive QBR One-Pager.sql](sql-query-export/reporting/Executive%20QBR%20One-Pager.sql) | Single-row executive roll-up: asset count, total risk, severity counts, exploitable findings, % authenticated, and % with agent (optional tag scope) |
-| [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA based on how long each finding was open (remediation inferred from age vs. last scan) |
+| [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
 
 ### vulnerability-tracking
 

@@ -1,28 +1,33 @@
 -- Vulnerabilities Remediated Within SLA
--- Counts vulnerability findings that were remediated inside vs. outside a
--- 30-day remediation SLA, based on how long each finding was open.
--- Adjust the SLA threshold (30) to match your organization's policy.
--- NOTE: The InsightVM Reporting Data Model does not expose an explicit
--- remediation date, so "remediated" is inferred from fact_asset_vulnerability_age
--- where most_recently_discovered is older than the most recent scan finish
--- (the finding was not seen on the latest scan). Verify this assumption fits
--- your data retention / scan cadence.
+-- Counts vulnerability findings remediated inside vs. outside a 30-day SLA.
+-- The InsightVM data model exposes no explicit remediation date, so a finding is
+-- treated as remediated when it appears in an asset's scan history
+-- (fact_asset_scan_vulnerability_finding) but is absent from the current open
+-- finding set (fact_asset_vulnerability_finding). Days-open is measured from the
+-- first to the last scan in which the finding was observed. Adjust the 30-day SLA.
 
-WITH last_scan AS (
-    -- Most recent scan finish time per asset, used as the "remediated by" boundary
-    SELECT asset_id, MAX(scan_finished) AS last_scan_finished
-    FROM dim_asset_scan
-    GROUP BY asset_id
+WITH finding_history AS (
+    -- First and last scan-finish dates each asset/vuln was observed in history
+    SELECT
+        fasvf.asset_id,
+        fasvf.vulnerability_id,
+        MIN(ds.finished)::date AS first_seen,
+        MAX(ds.finished)::date AS last_seen
+    FROM fact_asset_scan_vulnerability_finding fasvf
+    JOIN dim_scan ds ON ds.scan_id = fasvf.scan_id
+    GROUP BY fasvf.asset_id, fasvf.vulnerability_id
 ),
 remediated AS (
-    -- A finding is treated as remediated when it was not seen on the latest scan
+    -- Keep only asset/vuln pairs no longer present in the current open finding set
     SELECT
         dv.severity,
-        (age.most_recently_discovered::date - age.first_discovered::date) AS days_open
-    FROM fact_asset_vulnerability_age age
-    JOIN last_scan ls ON ls.asset_id = age.asset_id
-    JOIN dim_vulnerability dv ON dv.vulnerability_id = age.vulnerability_id
-    WHERE age.most_recently_discovered < ls.last_scan_finished
+        (fh.last_seen - fh.first_seen) AS days_open
+    FROM finding_history fh
+    LEFT JOIN fact_asset_vulnerability_finding open_f
+      ON open_f.asset_id        = fh.asset_id
+     AND open_f.vulnerability_id = fh.vulnerability_id
+    JOIN dim_vulnerability dv ON dv.vulnerability_id = fh.vulnerability_id
+    WHERE open_f.asset_id IS NULL
 )
 SELECT
     severity,
