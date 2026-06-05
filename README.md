@@ -55,6 +55,7 @@ sql-query-export/
 | [Mean Time To Remediate by Severity.sql](sql-query-export/reporting/Mean%20Time%20To%20Remediate%20by%20Severity.sql) | Average and median days from first discovery to inferred remediation, per severity, with min/max |
 | [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Risk masked by approved, non-expired vulnerability exceptions, grouped by exception reason, with vulnerabilities de-duplicated so risk is not double-counted |
 | [Executive QBR One-Pager.sql](sql-query-export/reporting/Executive%20QBR%20One-Pager.sql) | Single-row executive roll-up: asset count, total risk, severity counts, exploitable findings, % authenticated, and % with agent (optional tag scope) |
+| [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20(New%20vs%20Fixed%20Monthly).sql) | Monthly gross new vulnerability findings vs. remediations, with net change; trailing 12 months |
 | [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
 
 ### vulnerability-tracking
