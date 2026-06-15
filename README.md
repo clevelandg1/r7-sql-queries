@@ -56,6 +56,7 @@ sql-query-export/
 | [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Risk masked by approved, non-expired vulnerability exceptions, grouped by exception reason, with vulnerabilities de-duplicated so risk is not double-counted |
 | [Executive QBR One-Pager.sql](sql-query-export/reporting/Executive%20QBR%20One-Pager.sql) | Single-row executive roll-up: asset count, total risk, severity counts, exploitable findings, % authenticated, and % with agent (optional tag scope) |
 | [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
+| [Best Solution Per Vulnerability Per Asset.sql](sql-query-export/reporting/Best%20Solution%20Per%20Vulnerability%20Per%20Asset.sql) | For each currently-open vulnerability finding, the single best (rollup/superseding) recommended solution per asset, with solution type, time estimate and remediation URL (optional tag scope) |
 
 ### vulnerability-tracking
 
