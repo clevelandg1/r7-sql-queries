@@ -10,6 +10,7 @@ sql-query-export/
 ├── asset-management/
 ├── authentication/
 ├── reporting/
+├── scan-health/
 └── vulnerability-tracking/
 ```
 
@@ -56,6 +57,12 @@ sql-query-export/
 | [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Risk masked by approved, non-expired vulnerability exceptions, grouped by exception reason, with vulnerabilities de-duplicated so risk is not double-counted |
 | [Executive QBR One-Pager.sql](sql-query-export/reporting/Executive%20QBR%20One-Pager.sql) | Single-row executive roll-up: asset count, total risk, severity counts, exploitable findings, % authenticated, and % with agent (optional tag scope) |
 | [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
+
+### scan-health
+
+| File | Description |
+|------|-------------|
+| [Scan Failure and Duration Trend.sql](sql-query-export/scan-health/Scan%20Failure%20and%20Duration%20Trend.sql) | Monthly scan outcomes (successful/failed/aborted/stopped) with failure rate and avg/median/max scan duration, broken out by site and the site's configured scan engine |
 
 ### vulnerability-tracking
 
