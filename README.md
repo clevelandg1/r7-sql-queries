@@ -23,6 +23,7 @@ sql-query-export/
 | [Insight Agent Status Report.sql](sql-query-export/agent-health/Insight%20Agent%20Status%20Report.sql) | Alternative agent status view using last assessment date as a proxy for agent check-in, with owner and scan engine details |
 | [Insight Agent ID Export.sql](sql-query-export/agent-health/Insight%20Agent%20ID%20Export.sql) | Exports the Rapid7 Insight Agent unique ID for every agent-installed asset (source = 'R7 Agent') |
 | [Agent vs Scan Coverage Matrix.sql](sql-query-export/agent-health/Agent%20vs%20Scan%20Coverage%20Matrix.sql) | Classifies every asset as Agent Only, Scan Only, Both, or Neither using agent presence (source = 'R7 Agent') and scan history, with percentage of fleet |
+| [Stale Coverage Gap (No Recent Agent and No Recent Scan).sql](sql-query-export/agent-health/Stale%20Coverage%20Gap%20%28No%20Recent%20Agent%20and%20No%20Recent%20Scan%29.sql) | Blind-spot assets with no completed scan and no recent agent assessment inside a configurable staleness window (default 30 days), classified by gap_reason |
 
 ### asset-management
 
