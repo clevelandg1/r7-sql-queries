@@ -67,6 +67,12 @@ sql-query-export/
 |------|-------------|
 | [Scan Coverage vs Configured Targets.sql](sql-query-export/scan-health/Scan%20Coverage%20vs%20Configured%20Targets.sql) | Compares each site's configured included targets (dim_site_target) against assets that actually exist for the site, flagging configured host/IP targets with no matching live asset as coverage gaps (IP ranges flagged for manual review) |
 
+### scan-health
+
+| File | Description |
+|------|-------------|
+| [Scan Failure and Duration Trend.sql](sql-query-export/scan-health/Scan%20Failure%20and%20Duration%20Trend.sql) | Monthly scan outcomes (successful/failed/aborted/stopped) with failure rate and avg/median/max scan duration, broken out by site and the site's configured scan engine |
+
 ### vulnerability-tracking
 
 | File | Description |
