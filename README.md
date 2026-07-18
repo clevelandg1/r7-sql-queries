@@ -34,6 +34,7 @@ sql-query-export/
 | [Duplicate Assets.sql](sql-query-export/asset-management/Duplicate%20Assets.sql) | Finds hostnames assigned to more than one asset ID, which may indicate duplicate records |
 | [Software Inventory and EOL Report.sql](sql-query-export/asset-management/Software%20Inventory%20and%20EOL%20Report.sql) | Comprehensive software inventory with risk classification highlighting End-of-Support and high-risk software versions |
 | [Operating System EOL Inventory.sql](sql-query-export/asset-management/Operating%20System%20EOL%20Inventory.sql) | Lists assets on obsolete/end-of-life operating systems using Rapid7's built-in "Obsolete" vulnerability category (not hard-coded version patterns), grouped by OS with asset counts |
+| [Certificate or Service Configuration Watchlist.sql](sql-query-export/asset-management/Certificate%20or%20Service%20Configuration%20Watchlist.sql) | Flags assets exposing insecure/cleartext services (Telnet, SNMP v1/v2c, etc.) with the observed credential outcome, ranked by CRITICALITY tag (no cert-expiry field exists in the data model, so this watches risky service configs) |
 
 ### authentication
 
@@ -57,21 +58,10 @@ sql-query-export/
 | [Mean Time To Remediate by Severity.sql](sql-query-export/reporting/Mean%20Time%20To%20Remediate%20by%20Severity.sql) | Average and median days from first discovery to inferred remediation, per severity, with min/max |
 | [Accepted-Risk Exception Exposure Summary.sql](sql-query-export/reporting/Accepted-Risk%20Exception%20Exposure%20Summary.sql) | Risk masked by approved, non-expired vulnerability exceptions, grouped by exception reason, with vulnerabilities de-duplicated so risk is not double-counted |
 | [Executive QBR One-Pager.sql](sql-query-export/reporting/Executive%20QBR%20One-Pager.sql) | Single-row executive roll-up: asset count, total risk, severity counts, exploitable findings, % authenticated, and % with agent (optional tag scope) |
-| [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20(New%20vs%20Fixed%20Monthly).sql) | Monthly gross new vulnerability findings vs. remediations, with net change; trailing 12 months |
 | [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
-| [Best Solution Per Vulnerability Per Asset.sql](sql-query-export/reporting/Best%20Solution%20Per%20Vulnerability%20Per%20Asset.sql) | For each currently-open vulnerability finding, the single best (rollup/superseding) recommended solution per asset, with solution type, time estimate and remediation URL (optional tag scope) |
-
-### scan-health
-
-| File | Description |
-|------|-------------|
-| [Scan Coverage vs Configured Targets.sql](sql-query-export/scan-health/Scan%20Coverage%20vs%20Configured%20Targets.sql) | Compares each site's configured included targets (dim_site_target) against assets that actually exist for the site, flagging configured host/IP targets with no matching live asset as coverage gaps (IP ranges flagged for manual review) |
-
-### scan-health
-
-| File | Description |
-|------|-------------|
-| [Scan Failure and Duration Trend.sql](sql-query-export/scan-health/Scan%20Failure%20and%20Duration%20Trend.sql) | Monthly scan outcomes (successful/failed/aborted/stopped) with failure rate and avg/median/max scan duration, broken out by site and the site's configured scan engine |
+| [Best Solution Per Vulnerability Per Asset.sql](sql-query-export/reporting/Best%20Solution%20Per%20Vulnerability%20Per%20Asset.sql) | The single best (rollup/superseding) solution InsightVM recommends for each currently-open vulnerability finding per asset, via dim_asset_vulnerability_best_solution |
+| [Policy Compliance Scorecard by Site and Tag.sql](sql-query-export/reporting/Policy%20Compliance%20Scorecard%20by%20Site%20and%20Tag.sql) | Pass/fail policy rule results and compliance % broken out by site and tag, counting only scored, enabled rules on each asset's most recent policy scan |
+| [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20%28New%20vs%20Fixed%20Monthly%29.sql) | Monthly gross new findings vs. remediations over the trailing 12 months, with net change (negative = net improvement) |
 
 ### vulnerability-tracking
 
@@ -90,4 +80,11 @@ sql-query-export/
 | [Exploitable Vulnerabilities With Published Exploit.sql](sql-query-export/vulnerability-tracking/Exploitable%20Vulnerabilities%20With%20Published%20Exploit.sql) | Top 50 exploitable vulnerabilities ranked by affected asset count multiplied by risk score (ported from the Rapid7 community query) |
 | [Threat-Prioritized Remediation Queue.sql](sql-query-export/vulnerability-tracking/Threat-Prioritized%20Remediation%20Queue.sql) | Ranks open vulnerabilities by a threat-priority score combining exploit availability, malware kits, severity, and affected asset count (optional tag scope) |
 | [Vulnerability Aging Buckets by Severity.sql](sql-query-export/vulnerability-tracking/Vulnerability%20Aging%20Buckets%20by%20Severity.sql) | Counts open findings in 0-30 / 31-60 / 61-90 / 90+ day age buckets broken out by severity |
-| [Vulns With No Available Solution.sql](sql-query-export/vulnerability-tracking/Vulns%20With%20No%20Available%20Solution.sql) | Open vulnerability findings with no best-fix solution mapped in dim_asset_vulnerability_best_solution, aggregated by vulnerability with affected asset counts (optional tag scope) |
+| [Vulns With No Available Solution.sql](sql-query-export/vulnerability-tracking/Vulns%20With%20No%20Available%20Solution.sql) | Currently-open findings with no remediation mapped in the data model — risk that can't simply be patched and likely needs compensating controls or an exception |
+
+### scan-health
+
+| File | Description |
+|------|-------------|
+| [Scan Coverage vs Configured Targets.sql](sql-query-export/scan-health/Scan%20Coverage%20vs%20Configured%20Targets.sql) | Compares each site's configured included targets against assets that actually exist for that site to surface configured targets with no matching live asset (coverage blind spots); IP ranges/CIDR flagged for manual review |
+| [Scan Failure and Duration Trend.sql](sql-query-export/scan-health/Scan%20Failure%20and%20Duration%20Trend.sql) | Monthly scan outcomes (successful/failed/aborted/stopped) and duration stats by site and scan engine, to surface flaky engines and long-running scans |

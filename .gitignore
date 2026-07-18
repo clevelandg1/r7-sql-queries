@@ -3,3 +3,9 @@
 *.log
 *.tmp
 *.swp
+
+# Never commit credentials / tokens
+*.pat
+gh_pat*.txt
+*token*
+*secret*
