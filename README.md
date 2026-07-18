@@ -10,6 +10,7 @@ sql-query-export/
 ├── asset-management/
 ├── authentication/
 ├── reporting/
+├── scan-health/
 └── vulnerability-tracking/
 ```
 
@@ -59,6 +60,12 @@ sql-query-export/
 | [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20(New%20vs%20Fixed%20Monthly).sql) | Monthly gross new vulnerability findings vs. remediations, with net change; trailing 12 months |
 | [Vulnerabilities Remediated Within SLA.sql](sql-query-export/reporting/Vulnerabilities%20Remediated%20Within%20SLA.sql) | Counts remediated findings inside vs. outside a 30-day SLA, with remediation inferred from scan history (seen historically, absent from current open findings) and days-open measured first-to-last observed scan |
 | [Best Solution Per Vulnerability Per Asset.sql](sql-query-export/reporting/Best%20Solution%20Per%20Vulnerability%20Per%20Asset.sql) | For each currently-open vulnerability finding, the single best (rollup/superseding) recommended solution per asset, with solution type, time estimate and remediation URL (optional tag scope) |
+
+### scan-health
+
+| File | Description |
+|------|-------------|
+| [Scan Coverage vs Configured Targets.sql](sql-query-export/scan-health/Scan%20Coverage%20vs%20Configured%20Targets.sql) | Compares each site's configured included targets (dim_site_target) against assets that actually exist for the site, flagging configured host/IP targets with no matching live asset as coverage gaps (IP ranges flagged for manual review) |
 
 ### vulnerability-tracking
 
