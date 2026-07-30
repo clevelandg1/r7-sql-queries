@@ -35,6 +35,7 @@ sql-query-export/
 | [Software Inventory and EOL Report.sql](sql-query-export/asset-management/Software%20Inventory%20and%20EOL%20Report.sql) | Comprehensive software inventory with risk classification highlighting End-of-Support and high-risk software versions |
 | [Operating System EOL Inventory.sql](sql-query-export/asset-management/Operating%20System%20EOL%20Inventory.sql) | Lists assets on obsolete/end-of-life operating systems using Rapid7's built-in "Obsolete" vulnerability category (not hard-coded version patterns), grouped by OS with asset counts |
 | [Certificate or Service Configuration Watchlist.sql](sql-query-export/asset-management/Certificate%20or%20Service%20Configuration%20Watchlist.sql) | Flags assets exposing insecure/cleartext services (Telnet, SNMP v1/v2c, etc.) with the observed credential outcome, ranked by CRITICALITY tag (no cert-expiry field exists in the data model, so this watches risky service configs) |
+| [Asset Inventory With First and Last Discovered.sql](sql-query-export/asset-management/Asset%20Inventory%20With%20First%20and%20Last%20Discovered.sql) | Full per-asset inventory (IP, host, MAC, OS, sites) with first/last discovery dates from fact_asset_discovery; one row per asset |
 
 ### authentication
 
@@ -63,6 +64,9 @@ sql-query-export/
 | [Policy Compliance Scorecard by Site and Tag.sql](sql-query-export/reporting/Policy%20Compliance%20Scorecard%20by%20Site%20and%20Tag.sql) | Pass/fail policy rule results and compliance % broken out by site and tag, counting only scored, enabled rules on each asset's most recent policy scan |
 | [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20%28New%20vs%20Fixed%20Monthly%29.sql) | Monthly gross new findings vs. remediations over the trailing 12 months, with net change (negative = net improvement) |
 | [Daily Risk Score Snapshot With Day-Over-Day Change.sql](sql-query-export/reporting/Daily%20Risk%20Score%20Snapshot%20With%20Day-Over-Day%20Change.sql) | Org-wide risk score captured at a DAILY interval with day-over-day risk and vuln-count deltas, so remediation shows up the day it lands (standard weekly/monthly trends miss intra-period drops); editable date window |
+| [Expiring Exceptions Watchlist.sql](sql-query-export/reporting/Expiring%20Exceptions%20Watchlist.sql) | Approved vulnerability exceptions expiring within 90 days, bucketed 0-30/31-60/61-90 (plus already-expired), with scope resolved to site/asset/group |
+| [Risk Score Trend by Tag Over Time.sql](sql-query-export/reporting/Risk%20Score%20Trend%20by%20Tag%20Over%20Time.sql) | Aggregated risk-score time series (total/avg/peak) per tag per interval via fact_asset_date(); edit dates, interval, and tag prefix |
+| [Software EOL Risk Roll-up by Business Unit.sql](sql-query-export/reporting/Software%20EOL%20Risk%20Roll-up%20by%20Business%20Unit.sql) | End-of-life/obsolete software exposure rolled up per business-unit tag using Rapid7's Obsolete category, with % assets affected |
 
 ### vulnerability-tracking
 
