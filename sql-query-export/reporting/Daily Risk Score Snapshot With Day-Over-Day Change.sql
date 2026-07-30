@@ -9,8 +9,8 @@ WITH daily AS (
     SELECT
         fad.day                                    AS snapshot_date,
         COUNT(DISTINCT fad.asset_id)               AS assets_assessed,
-        ROUND(SUM(fad.riskscore))                  AS total_risk_score,
-        ROUND(AVG(fad.riskscore))                  AS avg_risk_score_per_asset,
+        ROUND(SUM(fad.riskscore)::numeric)         AS total_risk_score,
+        ROUND(AVG(fad.riskscore)::numeric)         AS avg_risk_score_per_asset,
         SUM(fad.critical_vulnerabilities)          AS critical_vulns,
         SUM(fad.severe_vulnerabilities)            AS severe_vulns,
         SUM(fad.moderate_vulnerabilities)          AS moderate_vulns,
