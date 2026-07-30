@@ -62,6 +62,7 @@ sql-query-export/
 | [Best Solution Per Vulnerability Per Asset.sql](sql-query-export/reporting/Best%20Solution%20Per%20Vulnerability%20Per%20Asset.sql) | The single best (rollup/superseding) solution InsightVM recommends for each currently-open vulnerability finding per asset, via dim_asset_vulnerability_best_solution |
 | [Policy Compliance Scorecard by Site and Tag.sql](sql-query-export/reporting/Policy%20Compliance%20Scorecard%20by%20Site%20and%20Tag.sql) | Pass/fail policy rule results and compliance % broken out by site and tag, counting only scored, enabled rules on each asset's most recent policy scan |
 | [Remediation Velocity Trend (New vs Fixed Monthly).sql](sql-query-export/reporting/Remediation%20Velocity%20Trend%20%28New%20vs%20Fixed%20Monthly%29.sql) | Monthly gross new findings vs. remediations over the trailing 12 months, with net change (negative = net improvement) |
+| [Daily Risk Score Snapshot With Day-Over-Day Change.sql](sql-query-export/reporting/Daily%20Risk%20Score%20Snapshot%20With%20Day-Over-Day%20Change.sql) | Org-wide risk score captured at a DAILY interval with day-over-day risk and vuln-count deltas, so remediation shows up the day it lands (standard weekly/monthly trends miss intra-period drops); editable date window |
 
 ### vulnerability-tracking
 
